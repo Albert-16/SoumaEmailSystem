@@ -569,6 +569,183 @@ Los dos sistemas estan **completamente desacoplados** — comparten unicamente u
 
 ---
 
+## Despliegue en IIS (Produccion / UAT)
+
+> **Solo se publica `Souma.Tool`** (el dashboard Blazor Server).
+> Tu servicio ASMX ya corre en IIS — solo necesitas agregarle `SoumaEmailLogWriter.cs`.
+
+### Arquitectura en IIS
+
+```
+Servidor IIS (Windows Server)
+|
++-- Sitio: "ServicioCorreoASMX" (ya existe)     <-- .NET Framework 4.7.2
+|   |   App Pool: "DefaultAppPool" (CLR v4.0)
+|   |
+|   +-- SoumaEmailLogWriter.cs                  <-- Copiar este archivo
+|   |   Escribe JSON a \\servidor\logs\email-logs\
+|   |
+|   +-- Tu WebMethod existente
+|       (agregar las 3 lineas de logging)
+|
++-- Sitio: "SoumaDashboard" (NUEVO)             <-- .NET 10 Blazor Server
+|   |   App Pool: "SoumaDashboardPool" (No Managed Code)
+|   |
+|   +-- C:\inetpub\SoumaDashboard\              <-- dotnet publish aqui
+|       Lee JSON de \\servidor\logs\email-logs\
+|
++-- Carpeta compartida de logs
+    \\servidor\logs\email-logs\
+    +-- email-log-2026-03-01.json
+    +-- email-log-2026-03-02.json
+    +-- ...
+```
+
+### Prerequisitos en el servidor
+
+1. **Instalar .NET 10 Hosting Bundle** (incluye ASP.NET Core Module para IIS):
+   ```
+   https://dotnet.microsoft.com/download/dotnet/10.0
+   → Descargar "Hosting Bundle" (no solo el Runtime)
+   → Reiniciar IIS despues de instalar: iisreset
+   ```
+
+2. **Crear la carpeta de logs** (si no existe):
+   ```cmd
+   mkdir \\servidor\logs\email-logs
+   ```
+
+3. **Crear la carpeta de publicacion**:
+   ```cmd
+   mkdir C:\inetpub\SoumaDashboard
+   ```
+
+### Paso 1 — Publicar Souma.Tool
+
+Desde tu maquina de desarrollo, ejecutar:
+
+```cmd
+cd C:\Users\MSI MAG\SoumaMail
+
+dotnet publish Souma.Tool/Souma.Tool.csproj ^
+  --configuration Release ^
+  --output ./publish/SoumaDashboard ^
+  --self-contained false
+```
+
+> **`--self-contained false`** = requiere el Hosting Bundle en el servidor (mas liviano).
+> Si prefieres no instalar nada en el servidor, usa `--self-contained true` (genera ~80 MB pero no requiere runtime).
+
+El resultado estara en `./publish/SoumaDashboard/`. Copiar **todo el contenido** de esa carpeta al servidor:
+
+```cmd
+xcopy /E /Y .\publish\SoumaDashboard\* \\servidor\C$\inetpub\SoumaDashboard\
+```
+
+### Paso 2 — Configurar `appsettings.Production.json` en el servidor
+
+Editar `C:\inetpub\SoumaDashboard\appsettings.Production.json`:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning",
+      "Microsoft.AspNetCore": "Warning",
+      "Souma": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "EmailLogging": {
+    "LogDirectory": "\\\\servidor\\logs\\email-logs\\",
+    "PollingIntervalSeconds": 30
+  }
+}
+```
+
+> **IMPORTANTE:** La ruta `LogDirectory` debe ser la **misma** que configuraste
+> en `SoumaEmailLogWriter.LogDirectory` del servicio ASMX.
+
+### Paso 3 — Crear Application Pool en IIS
+
+1. Abrir **IIS Manager** (`inetmgr`)
+2. Click derecho en **Application Pools** → **Add Application Pool...**
+3. Configurar:
+   - **Name:** `SoumaDashboardPool`
+   - **.NET CLR version:** `No Managed Code` (obligatorio para .NET 10)
+   - **Managed pipeline mode:** `Integrated`
+4. Click derecho en el pool → **Advanced Settings...**
+   - **Start Mode:** `AlwaysRunning` (para que el BackgroundService de polling inicie con IIS)
+   - **Identity:** Cuenta que tenga permisos de **lectura** en `\\servidor\logs\email-logs\`
+
+### Paso 4 — Crear el sitio en IIS
+
+1. Click derecho en **Sites** → **Add Website...**
+2. Configurar:
+   - **Site name:** `SoumaDashboard`
+   - **Application pool:** `SoumaDashboardPool`
+   - **Physical path:** `C:\inetpub\SoumaDashboard`
+   - **Binding:**
+     - Type: `http`
+     - Port: `8080` (o el que prefieras, no uses 80 si ya esta ocupado)
+     - Host name: (dejar vacio para acceder por IP, o poner `souma.davivienda.hn`)
+3. Click **OK**
+
+### Paso 5 — Verificar permisos
+
+El Application Pool identity necesita estos permisos:
+
+| Carpeta | Permiso | Motivo |
+|---------|---------|--------|
+| `C:\inetpub\SoumaDashboard` | Lectura + Ejecucion | Archivos de la aplicacion |
+| `C:\inetpub\SoumaDashboard\logs` | Escritura | stdout logs de IIS |
+| `\\servidor\logs\email-logs\` | **Lectura** | Leer archivos JSON de email |
+
+```cmd
+:: Dar permisos al pool identity (si usa ApplicationPoolIdentity)
+icacls "C:\inetpub\SoumaDashboard" /grant "IIS AppPool\SoumaDashboardPool":(OI)(CI)RX
+icacls "C:\inetpub\SoumaDashboard\logs" /grant "IIS AppPool\SoumaDashboardPool":(OI)(CI)M
+icacls "\\servidor\logs\email-logs" /grant "IIS AppPool\SoumaDashboardPool":(OI)(CI)R
+```
+
+### Paso 6 — Verificar que funciona
+
+1. Navegar a `http://servidor:8080` (o el puerto que configuraste)
+2. Debe cargar el dashboard dark theme
+3. Si el ASMX ya esta escribiendo logs, deben aparecer en ~30 segundos (polling interval)
+
+### Troubleshooting
+
+| Problema | Solucion |
+|----------|----------|
+| Error 500.19 | Falta el .NET 10 Hosting Bundle. Instalar + `iisreset` |
+| Error 502.5 | El `web.config` apunta a un DLL que no existe. Verificar el publish |
+| Dashboard carga pero sin datos | Verificar que `LogDirectory` en appsettings.Production.json coincide con la ruta del ASMX |
+| "Access denied" en logs | El App Pool identity no tiene permisos de lectura en la carpeta de logs |
+| Charts no cargan | Verificar que el servidor tiene acceso a internet para CDN de Chart.js, o copiar chart.js localmente |
+
+### Actualizaciones futuras
+
+Para actualizar el dashboard sin downtime:
+
+```cmd
+:: 1. Publicar nueva version
+dotnet publish Souma.Tool/Souma.Tool.csproj -c Release -o ./publish/SoumaDashboard
+
+:: 2. Detener el sitio en IIS
+%windir%\system32\inetsrv\appcmd stop site "SoumaDashboard"
+
+:: 3. Copiar archivos (NO sobreescribir appsettings.Production.json)
+xcopy /E /Y /EXCLUDE:exclude.txt .\publish\SoumaDashboard\* \\servidor\C$\inetpub\SoumaDashboard\
+
+:: 4. Reiniciar el sitio
+%windir%\system32\inetsrv\appcmd start site "SoumaDashboard"
+```
+
+> **Nota:** El `appsettings.Production.json` del servidor NO se sobreescribe — asi conservas la configuracion de rutas sin tener que reconfigurar cada vez.
+
+---
+
 ## Ejecucion Local
 
 ```bash
