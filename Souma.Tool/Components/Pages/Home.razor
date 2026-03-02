@@ -1,0 +1,235 @@
+@page "/"
+@rendermode InteractiveServer
+@implements IDisposable
+@inject EmailLogReaderService ReaderService
+@inject ChartInteropService ChartService
+@inject IJSRuntime JS
+
+<PageTitle>Souma Tool - Dashboard</PageTitle>
+
+@* === Banner de alerta de tasa de fallo alta === *@
+<FailureAlertBanner FailureRate="@_recentFailureRate" />
+
+@* === Toast de nuevos datos === *@
+<ToastNotification Show="@_showToast" OnDismissed="() => _showToast = false" />
+
+@* === Tarjetas de métricas === *@
+<div class="metrics-grid">
+    <DailyVolumeCard TotalCount="@_summary.TotalCount"
+                     DateLabel="@_todayLabel"
+                     IsLoading="@_loading" />
+
+    <StatusDistributionCard Sent="@_summary.TotalSent"
+                            Failed="@_summary.TotalFailed"
+                            Pending="@_summary.TotalPending"
+                            Retrying="@_summary.TotalRetrying"
+                            IsLoading="@_loading" />
+
+    <AverageDurationCard AverageDurationMs="@_summary.AverageDurationMs"
+                         IsLoading="@_loading" />
+
+    <MicroserviceBreakdownCard Breakdown="@_microserviceBreakdown"
+                               IsLoading="@_loading" />
+
+    <TopRecipientsCard Recipients="@_topRecipients"
+                       IsLoading="@_loading" />
+</div>
+
+@* === Graficos === *@
+<div class="charts-grid">
+    <div class="card">
+        <div class="card-title">Volumen Diario (Ultimos 7 dias)</div>
+        <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">Exito vs Fallo</div>
+        <div class="chart-container">
+            <canvas id="doughnutChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">Emails por Microservicio</div>
+        <div class="chart-container">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+</div>
+
+@* === Panel de filtros === *@
+<FiltersPanel Filter="@_filter"
+              AvailableMicroservices="@_availableMicroservices"
+              OnFiltersApplied="ApplyFilters" />
+
+@* === Boton de exportar CSV === *@
+<div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;gap:0.5rem;">
+    <button class="btn btn-success btn-sm" @onclick="ExportCsv" disabled="@(_filteredLogs.Count == 0)">
+        Exportar CSV (@_filteredLogs.Count registros)
+    </button>
+</div>
+
+@* === Tabla de logs === *@
+<EmailLogTable Logs="@_filteredLogs"
+               IsLoading="@_loading"
+               OnRowClicked="ShowDetail" />
+
+@* === Modal de detalle === *@
+<EmailDetailModal Log="@_selectedLog" OnClose="CloseDetail" />
+
+@code {
+    private bool _loading = true;
+    private bool _showToast;
+    private DashboardFilter _filter = new();
+    private List<EmailLogDto> _filteredLogs = [];
+    private List<string> _availableMicroservices = [];
+    private EmailLogSummary _summary = EmptySummary();
+    private Dictionary<string, int> _microserviceBreakdown = [];
+    private Dictionary<string, int> _topRecipients = [];
+    private double _recentFailureRate;
+    private EmailLogDto? _selectedLog;
+    private string _todayLabel = "";
+
+    protected override void OnInitialized()
+    {
+        // Suscribirse a las actualizaciones del polling
+        ReaderService.OnDataRefreshed += OnDataRefreshed;
+
+        // Configurar filtro por defecto: hoy
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+        _filter.DateFrom = today;
+        _filter.DateTo = today;
+        _todayLabel = today.ToString("dd/MM/yyyy");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Cargar datos iniciales
+            RefreshData();
+            _loading = false;
+            StateHasChanged();
+
+            // Pequeño delay para asegurar que el DOM está listo para Chart.js
+            await Task.Delay(300);
+            await RenderChartsAsync();
+        }
+    }
+
+    private async void OnDataRefreshed()
+    {
+        await InvokeAsync(() =>
+        {
+            if (ReaderService.HasNewData)
+            {
+                _showToast = true;
+                ReaderService.AcknowledgeNewData();
+            }
+
+            RefreshData();
+            StateHasChanged();
+
+            _ = RenderChartsAsync();
+        });
+    }
+
+    private void RefreshData()
+    {
+        _filteredLogs = ReaderService.GetFilteredLogs(_filter);
+        _availableMicroservices = ReaderService.GetAvailableMicroservices();
+        _recentFailureRate = ReaderService.GetRecentFailureRate(60);
+
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+        _summary = ReaderService.GetSummary(_filteredLogs, today);
+
+        _microserviceBreakdown = _filteredLogs
+            .GroupBy(l => l.SourceMicroservice)
+            .OrderByDescending(g => g.Count())
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        _topRecipients = _filteredLogs
+            .SelectMany(l => l.RecipientAddresses)
+            .GroupBy(r => r, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(g => g.Count())
+            .Take(5)
+            .ToDictionary(g => g.Key, g => g.Count());
+    }
+
+    private async Task RenderChartsAsync()
+    {
+        try
+        {
+            // Grafico de linea: volumen ultimos 7 dias
+            List<EmailLogDto> allLogs = ReaderService.GetAllLogs();
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+            string[] lineLabels = new string[7];
+            int[] lineData = new int[7];
+
+            for (int i = 6; i >= 0; i--)
+            {
+                DateOnly date = today.AddDays(-i);
+                lineLabels[6 - i] = date.ToString("MM/dd");
+                DateTimeOffset dayStart = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+                DateTimeOffset dayEnd = date.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc);
+                lineData[6 - i] = allLogs.Count(l => l.SentAtUtc >= dayStart && l.SentAtUtc <= dayEnd);
+            }
+
+            await ChartService.RenderLineChartAsync("lineChart", lineLabels, lineData);
+
+            // Grafico de dona: distribucion de estados
+            string[] doughnutLabels = ["Sent", "Failed", "Pending", "Retrying"];
+            int[] doughnutData = [_summary.TotalSent, _summary.TotalFailed, _summary.TotalPending, _summary.TotalRetrying];
+            string[] doughnutColors = ["#22c55e", "#ef4444", "#8b5cf6", "#f59e0b"];
+            await ChartService.RenderDoughnutChartAsync("doughnutChart", doughnutLabels, doughnutData, doughnutColors);
+
+            // Grafico de barras: por microservicio
+            string[] barLabels = _microserviceBreakdown.Keys.ToArray();
+            int[] barData = _microserviceBreakdown.Values.ToArray();
+            if (barLabels.Length > 0)
+            {
+                await ChartService.RenderBarChartAsync("barChart", barLabels, barData);
+            }
+        }
+        catch (Exception)
+        {
+            // Chart.js puede fallar si el componente se desmonto — ignorar
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        RefreshData();
+        _ = RenderChartsAsync();
+    }
+
+    private void ShowDetail(EmailLogDto log) => _selectedLog = log;
+
+    private void CloseDetail() => _selectedLog = null;
+
+    private async Task ExportCsv()
+    {
+        byte[] csvBytes = CsvExportService.GenerateCsv(_filteredLogs);
+        string base64 = Convert.ToBase64String(csvBytes);
+        string fileName = $"email-logs-{DateTime.UtcNow:yyyyMMdd-HHmmss}.csv";
+        await JS.InvokeVoidAsync("SoumaCharts.downloadFile", fileName, "text/csv", base64);
+    }
+
+    private static EmailLogSummary EmptySummary() => new()
+    {
+        Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        TotalSent = 0,
+        TotalFailed = 0,
+        TotalPending = 0,
+        TotalRetrying = 0,
+        AverageDurationMs = 0,
+        TopRecipients = [],
+        FailureRate = 0,
+        TotalCount = 0
+    };
+
+    public void Dispose()
+    {
+        ReaderService.OnDataRefreshed -= OnDataRefreshed;
+    }
+}

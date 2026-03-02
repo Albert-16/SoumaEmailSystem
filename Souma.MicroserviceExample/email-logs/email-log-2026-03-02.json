@@ -1,0 +1,394 @@
+[
+  {
+    "messageId": "8bef027e-0475-43fd-a88b-c3d557d76c85",
+    "correlationId": "batch-test-1772417092-1",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario1@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #1",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:53.4976472+00:00",
+    "durationMs": 483,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "7a415fca-d716-465b-88c0-cb678215f876",
+    "correlationId": "batch-test-1772417093-2",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario2@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #2",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:54.037464+00:00",
+    "durationMs": 308,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "8b7af13f-52e5-4af5-b411-3b9a7a14e08a",
+    "correlationId": "batch-test-1772417094-3",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario3@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #3",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:54.4716574+00:00",
+    "durationMs": 204,
+    "retryCount": 0,
+    "hasAttachments": true,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "8560ca1e-2ba0-4112-8095-41c59442ac87",
+    "correlationId": "batch-test-1772417094-4",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario4@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #4",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:54.9674137+00:00",
+    "durationMs": 308,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "3ffefb80-c853-44b1-bc39-e1368d757397",
+    "correlationId": "batch-test-1772417095-5",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario5@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #5",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:55.695956+00:00",
+    "durationMs": 482,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "b6752518-2af4-4f7a-b209-3af7d2893a74",
+    "correlationId": "batch-test-1772417095-6",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario6@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #6",
+    "status": "Failed",
+    "statusMessage": "TimeoutException - La operaci\u00F3n excedi\u00F3 el tiempo de espera (30s)",
+    "sentAtUtc": "2026-03-02T02:04:56.21722+00:00",
+    "durationMs": 145,
+    "retryCount": 0,
+    "hasAttachments": true,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "60533029-fb9a-41ae-81a7-fb3752db6ad6",
+    "correlationId": "batch-test-1772417096-7",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario7@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #7",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:56.9513875+00:00",
+    "durationMs": 383,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "77e9c688-3bed-4283-b8dc-db87988fb8a5",
+    "correlationId": "batch-test-1772417097-8",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario8@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #8",
+    "status": "Failed",
+    "statusMessage": "HTTP 429 Too Many Requests - L\u00EDmite de env\u00EDo excedido",
+    "sentAtUtc": "2026-03-02T02:04:57.3854492+00:00",
+    "durationMs": 260,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "3bda36f4-195e-43c4-a6e9-0233d80f734c",
+    "correlationId": "batch-test-1772417097-9",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario9@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #9",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:57.8814189+00:00",
+    "durationMs": 317,
+    "retryCount": 0,
+    "hasAttachments": true,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "0945b88d-81a8-49f2-83c4-ecb58782f945",
+    "correlationId": "batch-test-1772417097-10",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario10@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #10",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:58.2450068+00:00",
+    "durationMs": 157,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "4d22a879-fe74-48b0-a883-7582490e54c2",
+    "correlationId": "batch-test-1772417098-11",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario11@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #11",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:58.5043781+00:00",
+    "durationMs": 80,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "2bf5c129-ece7-4a00-9446-4b1ffdedcc3e",
+    "correlationId": "batch-test-1772417098-12",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario12@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #12",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:58.9974041+00:00",
+    "durationMs": 290,
+    "retryCount": 0,
+    "hasAttachments": true,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "63066d5c-0c08-4225-9b6b-2255b5069c4c",
+    "correlationId": "batch-test-1772417099-13",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario13@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #13",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:59.3228907+00:00",
+    "durationMs": 135,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "72532a25-2bb5-4862-88ba-7aedf129f577",
+    "correlationId": "batch-test-1772417099-14",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario14@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #14",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:04:59.5709479+00:00",
+    "durationMs": 63,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "b936e5ea-b2e8-4842-a21e-2430974c1f0d",
+    "correlationId": "batch-test-1772417099-15",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "usuario15@davivienda.hn",
+      "copia@banco.hn"
+    ],
+    "ccAddresses": [
+      "audit@davivienda.hn"
+    ],
+    "subject": "Notificacion de transaccion #15",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:05:00.2374303+00:00",
+    "durationMs": 495,
+    "retryCount": 0,
+    "hasAttachments": true,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "34c6a62e-6a83-46fc-84f3-b5ca2eead127",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "user1@banco.hn"
+    ],
+    "subject": "Prueba en vivo #1",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:11:01.2148182+00:00",
+    "durationMs": 84,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "b382a0f8-4067-4047-9021-60747b703439",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "user2@banco.hn"
+    ],
+    "subject": "Prueba en vivo #2",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:11:01.6422286+00:00",
+    "durationMs": 176,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "6116bdf8-0880-422d-b307-75e7304249f4",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "user3@banco.hn"
+    ],
+    "subject": "Prueba en vivo #3",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:11:01.9856846+00:00",
+    "durationMs": 217,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "4db2c7ff-5ec2-4dc8-ba27-d780f37c67b5",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "user4@banco.hn"
+    ],
+    "subject": "Prueba en vivo #4",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:11:02.4940038+00:00",
+    "durationMs": 251,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "04f8e3e4-ca11-4e5b-925e-281d1bb0f16e",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "user5@banco.hn"
+    ],
+    "subject": "Prueba en vivo #5",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:11:03.096629+00:00",
+    "durationMs": 413,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+    {
+    "messageId": "04f8e3e4-ca11-4e5b-925e-281d1bb0f189",
+    "sourceMicroservice": "TransferenciaEntreCuentas",
+    "senderAddress": "electronico@davivienda.hn",
+    "recipientAddresses": [
+      "carlos.ardoni.prov@davivienda.com.hn"
+    ],
+    "subject": "Test Json",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-02T02:11:03.096629+00:00",
+    "durationMs": 413,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV"
+  }
+]

@@ -1,0 +1,19 @@
+@* Tarjeta de duración promedio de envío *@
+
+<div class="card">
+    <div class="card-title">Duracion Promedio</div>
+    @if (IsLoading)
+    {
+        <div class="skeleton skeleton-text" style="width:80px;height:2rem;"></div>
+    }
+    else
+    {
+        <div class="card-value">@AverageDurationMs.ToString("F0")<span style="font-size:0.9rem;color:var(--text-muted);"> ms</span></div>
+        <div class="card-subtitle">Tiempo promedio de envio</div>
+    }
+</div>
+
+@code {
+    [Parameter] public double AverageDurationMs { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+}

@@ -1,0 +1,82 @@
+@* Panel de filtros consolidado para el dashboard *@
+
+<div class="filters-panel">
+    <div class="filters-grid">
+        <div class="filter-group">
+            <label>Fecha Desde</label>
+            <input type="date" @bind="Filter.DateFrom" />
+        </div>
+        <div class="filter-group">
+            <label>Fecha Hasta</label>
+            <input type="date" @bind="Filter.DateTo" />
+        </div>
+        <div class="filter-group">
+            <label>Microservicio</label>
+            <select @bind="SelectedMicroservice">
+                <option value="">-- Todos --</option>
+                @foreach (string ms in AvailableMicroservices)
+                {
+                    <option value="@ms">@ms</option>
+                }
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Estado</label>
+            <select @bind="SelectedStatus">
+                <option value="">-- Todos --</option>
+                <option value="Sent">Sent</option>
+                <option value="Failed">Failed</option>
+                <option value="Pending">Pending</option>
+                <option value="Retrying">Retrying</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Remitente</label>
+            <input type="text" placeholder="Buscar remitente..." @bind="Filter.SenderFilter" />
+        </div>
+        <div class="filter-group">
+            <label>Destinatario</label>
+            <input type="text" placeholder="Buscar destinatario..." @bind="Filter.RecipientFilter" />
+        </div>
+        <div class="filter-actions">
+            <button class="btn btn-primary btn-sm" @onclick="OnApply">Aplicar</button>
+            <button class="btn btn-secondary btn-sm" @onclick="OnClear">Limpiar</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DashboardFilter Filter { get; set; } = new();
+    [Parameter] public List<string> AvailableMicroservices { get; set; } = [];
+    [Parameter] public EventCallback OnFiltersApplied { get; set; }
+
+    private string SelectedMicroservice
+    {
+        get => Filter.SelectedMicroservices.FirstOrDefault() ?? "";
+        set
+        {
+            Filter.SelectedMicroservices = string.IsNullOrEmpty(value) ? [] : [value];
+        }
+    }
+
+    private string SelectedStatus
+    {
+        get => Filter.SelectedStatuses.FirstOrDefault().ToString() ?? "";
+        set
+        {
+            Filter.SelectedStatuses = string.IsNullOrEmpty(value) ? [] :
+                Enum.TryParse<EmailStatus>(value, out var status) ? [status] : [];
+        }
+    }
+
+    private async Task OnApply()
+    {
+        await OnFiltersApplied.InvokeAsync();
+    }
+
+    private async Task OnClear()
+    {
+        Filter.Clear();
+        await OnFiltersApplied.InvokeAsync();
+    }
+}

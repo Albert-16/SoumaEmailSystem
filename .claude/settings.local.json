@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet new sln -n SoumaEmailSystem --force)",
+      "Bash(dotnet new classlib -n Souma.EmailLogging -f net10.0 --force)",
+      "Bash(dotnet sln SoumaEmailSystem.sln add Souma.EmailLogging/Souma.EmailLogging.csproj)",
+      "Bash(ls \"/c/Users/MSI MAG/SoumaMail/\"*.sln)",
+      "Bash(dotnet new web -n Souma.MicroserviceExample -f net10.0 --force)"
+    ]
+  }
+}

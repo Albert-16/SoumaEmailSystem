@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Souma.EmailLogging/Souma.EmailLogging.csproj" />
+  <Project Path="Souma.MicroserviceExample/Souma.MicroserviceExample.csproj" />
+  <Project Path="Souma.Tests/Souma.Tests.csproj" />
+  <Project Path="Souma.Tool/Souma.Tool.csproj" />
+</Solution>

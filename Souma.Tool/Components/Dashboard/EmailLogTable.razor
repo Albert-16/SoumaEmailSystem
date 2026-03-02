@@ -1,0 +1,98 @@
+@* Tabla paginada de todos los logs de email *@
+
+<div class="log-table-container">
+    @if (IsLoading)
+    {
+        <div style="padding:1.5rem;">
+            @for (int i = 0; i < 5; i++)
+            {
+                <div class="skeleton skeleton-text" style="margin-bottom:0.75rem;"></div>
+            }
+        </div>
+    }
+    else if (Logs.Count == 0)
+    {
+        <div style="padding:2rem;text-align:center;color:var(--text-muted);">
+            No se encontraron registros con los filtros aplicados.
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Microservicio</th>
+                        <th>Remitente</th>
+                        <th>Destinatarios</th>
+                        <th>Asunto</th>
+                        <th>Estado</th>
+                        <th>Duracion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (EmailLogDto log in PagedLogs)
+                    {
+                        <tr @onclick="() => OnRowClicked.InvokeAsync(log)">
+                            <td>@log.SentAtUtc.ToString("MM/dd HH:mm")</td>
+                            <td>@log.SourceMicroservice</td>
+                            <td title="@log.SenderAddress">@Truncate(log.SenderAddress, 22)</td>
+                            <td title="@string.Join(", ", log.RecipientAddresses)">@Truncate(string.Join(", ", log.RecipientAddresses), 25)</td>
+                            <td title="@log.Subject">@Truncate(log.Subject, 30)</td>
+                            <td><span class="status-badge status-@log.Status.ToString().ToLowerInvariant()">@log.Status</span></td>
+                            <td>@log.DurationMs ms</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (TotalPages > 1)
+        {
+            <div class="pagination">
+                <button class="btn btn-secondary btn-sm" disabled="@(CurrentPage <= 1)" @onclick="PreviousPage">Anterior</button>
+                <span style="color:var(--text-secondary);font-size:0.82rem;">
+                    Pagina @CurrentPage de @TotalPages (@Logs.Count registros)
+                </span>
+                <button class="btn btn-secondary btn-sm" disabled="@(CurrentPage >= TotalPages)" @onclick="NextPage">Siguiente</button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public List<EmailLogDto> Logs { get; set; } = [];
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public EventCallback<EmailLogDto> OnRowClicked { get; set; }
+
+    private const int PageSize = 50;
+    private int CurrentPage = 1;
+
+    private int TotalPages => (int)Math.Ceiling((double)Logs.Count / PageSize);
+
+    private List<EmailLogDto> PagedLogs => Logs
+        .Skip((CurrentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+
+    protected override void OnParametersSet()
+    {
+        // Reset a página 1 cuando cambian los datos
+        if (CurrentPage > TotalPages && TotalPages > 0)
+            CurrentPage = 1;
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1) CurrentPage--;
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages) CurrentPage++;
+    }
+
+    private static string Truncate(string text, int maxLength) =>
+        text.Length > maxLength ? string.Concat(text.AsSpan(0, maxLength - 3), "...") : text;
+}

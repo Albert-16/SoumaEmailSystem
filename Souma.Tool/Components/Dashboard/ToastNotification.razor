@@ -1,0 +1,43 @@
+@* Notificación toast para nuevos logs detectados *@
+@implements IDisposable
+
+@if (_visible)
+{
+    <div class="toast-container">
+        <div class="toast">
+            Nuevos logs detectados. Los datos se han actualizado.
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public EventCallback OnDismissed { get; set; }
+
+    private bool _visible;
+    private Timer? _timer;
+
+    protected override void OnParametersSet()
+    {
+        if (Show && !_visible)
+        {
+            _visible = true;
+            // Auto-hide después de 4 segundos
+            _timer?.Dispose();
+            _timer = new Timer(async _ =>
+            {
+                _visible = false;
+                await InvokeAsync(async () =>
+                {
+                    StateHasChanged();
+                    await OnDismissed.InvokeAsync();
+                });
+            }, null, 4000, Timeout.Infinite);
+        }
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

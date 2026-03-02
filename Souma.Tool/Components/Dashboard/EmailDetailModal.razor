@@ -1,0 +1,64 @@
+@* Modal de detalle de un registro de email seleccionado *@
+
+@if (Log is not null)
+{
+    <div class="modal-overlay" @onclick="OnClose">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Detalle del Email</h3>
+                <button class="modal-close" @onclick="OnClose">X</button>
+            </div>
+
+            <div class="detail-grid">
+                <span class="detail-label">MessageId</span>
+                <span class="detail-value">@Log.MessageId</span>
+
+                <span class="detail-label">CorrelationId</span>
+                <span class="detail-value">@(Log.CorrelationId ?? "—")</span>
+
+                <span class="detail-label">Microservicio</span>
+                <span class="detail-value">@Log.SourceMicroservice</span>
+
+                <span class="detail-label">Remitente</span>
+                <span class="detail-value">@Log.SenderAddress</span>
+
+                <span class="detail-label">Destinatarios</span>
+                <span class="detail-value">@string.Join(", ", Log.RecipientAddresses)</span>
+
+                <span class="detail-label">CC</span>
+                <span class="detail-value">@(Log.CcAddresses is not null ? string.Join(", ", Log.CcAddresses) : "—")</span>
+
+                <span class="detail-label">Asunto</span>
+                <span class="detail-value">@Log.Subject</span>
+
+                <span class="detail-label">Estado</span>
+                <span class="detail-value">
+                    <span class="status-badge status-@Log.Status.ToString().ToLowerInvariant()">@Log.Status</span>
+                </span>
+
+                <span class="detail-label">Mensaje Estado</span>
+                <span class="detail-value" style="color:var(--color-danger);">@(Log.StatusMessage ?? "—")</span>
+
+                <span class="detail-label">Fecha Envio</span>
+                <span class="detail-value">@Log.SentAtUtc.ToString("yyyy-MM-dd HH:mm:ss") UTC</span>
+
+                <span class="detail-label">Duracion</span>
+                <span class="detail-value">@Log.DurationMs ms</span>
+
+                <span class="detail-label">Reintentos</span>
+                <span class="detail-value">@Log.RetryCount</span>
+
+                <span class="detail-label">Adjuntos</span>
+                <span class="detail-value">@(Log.HasAttachments ? "Si" : "No")</span>
+
+                <span class="detail-label">Ambiente</span>
+                <span class="detail-value">@Log.Environment</span>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EmailLogDto? Log { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+}

@@ -1,0 +1,25 @@
+@* Banner de alerta cuando la tasa de fallo supera el 30% en los últimos 60 minutos *@
+
+@if (IsVisible)
+{
+    <div class="failure-alert">
+        <div class="alert-icon">!</div>
+        <div class="alert-text">
+            <div class="alert-title">Tasa de Fallo Alta: @FailureRate.ToString("F1")%</div>
+            <div class="alert-description">
+                La tasa de fallo en los ultimos 60 minutos supera el 30%.
+                Verifique el servicio de correo y los logs de error.
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>Tasa de fallo actual en porcentaje.</summary>
+    [Parameter] public double FailureRate { get; set; }
+
+    /// <summary>Umbral para mostrar la alerta (por defecto 30%).</summary>
+    [Parameter] public double Threshold { get; set; } = 30.0;
+
+    private bool IsVisible => FailureRate > Threshold;
+}

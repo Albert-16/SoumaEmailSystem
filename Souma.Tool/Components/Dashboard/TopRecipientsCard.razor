@@ -1,0 +1,33 @@
+@* Tarjeta de top 5 destinatarios más frecuentes *@
+
+<div class="card">
+    <div class="card-title">Top 5 Destinatarios</div>
+    @if (IsLoading)
+    {
+        <div class="skeleton skeleton-text" style="width:100%;height:3rem;"></div>
+    }
+    else if (Recipients.Count == 0)
+    {
+        <div class="card-subtitle">Sin datos</div>
+    }
+    else
+    {
+        <ul class="recipient-list" style="margin-top:0.5rem;">
+            @foreach (var item in Recipients)
+            {
+                <li>
+                    <span style="color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;" title="@item.Key">@TruncateEmail(item.Key)</span>
+                    <span class="recipient-count">@item.Value</span>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public Dictionary<string, int> Recipients { get; set; } = [];
+    [Parameter] public bool IsLoading { get; set; }
+
+    private static string TruncateEmail(string email) =>
+        email.Length > 28 ? string.Concat(email.AsSpan(0, 25), "...") : email;
+}

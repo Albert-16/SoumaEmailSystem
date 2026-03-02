@@ -1,0 +1,44 @@
+@* Tarjeta de distribución de estados con porcentajes *@
+
+<div class="card">
+    <div class="card-title">Distribucion de Estados</div>
+    @if (IsLoading)
+    {
+        <div class="skeleton skeleton-text" style="width:100%;height:3rem;"></div>
+    }
+    else
+    {
+        <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span><span class="status-badge status-sent">Sent</span></span>
+                <span style="font-weight:600;">@Sent <span style="color:var(--text-muted);font-size:0.75rem;">(@SentPct%)</span></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span><span class="status-badge status-failed">Failed</span></span>
+                <span style="font-weight:600;">@Failed <span style="color:var(--text-muted);font-size:0.75rem;">(@FailedPct%)</span></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span><span class="status-badge status-pending">Pending</span></span>
+                <span style="font-weight:600;">@Pending <span style="color:var(--text-muted);font-size:0.75rem;">(@PendingPct%)</span></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span><span class="status-badge status-retrying">Retrying</span></span>
+                <span style="font-weight:600;">@Retrying <span style="color:var(--text-muted);font-size:0.75rem;">(@RetryingPct%)</span></span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Sent { get; set; }
+    [Parameter] public int Failed { get; set; }
+    [Parameter] public int Pending { get; set; }
+    [Parameter] public int Retrying { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+
+    private int Total => Sent + Failed + Pending + Retrying;
+    private string SentPct => Total > 0 ? (Sent * 100.0 / Total).ToString("F1") : "0";
+    private string FailedPct => Total > 0 ? (Failed * 100.0 / Total).ToString("F1") : "0";
+    private string PendingPct => Total > 0 ? (Pending * 100.0 / Total).ToString("F1") : "0";
+    private string RetryingPct => Total > 0 ? (Retrying * 100.0 / Total).ToString("F1") : "0";
+}
