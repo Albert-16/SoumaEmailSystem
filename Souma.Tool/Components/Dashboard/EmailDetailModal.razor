@@ -37,7 +37,7 @@
                 </span>
 
                 <span class="detail-label">Mensaje Estado</span>
-                <span class="detail-value" style="color:var(--color-danger);">@(Log.StatusMessage ?? "—")</span>
+                <span class="detail-value" style="color:@(Log.Status == EmailStatus.Retrying ? "var(--color-warning)" : "var(--color-danger)");">@(Log.StatusMessage ?? "—")</span>
 
                 <span class="detail-label">Fecha Envio</span>
                 <span class="detail-value">@Log.SentAtUtc.ToString("yyyy-MM-dd HH:mm:ss") UTC</span>

@@ -390,5 +390,96 @@
     "retryCount": 0,
     "hasAttachments": false,
     "environment": "DEV"
+  },
+  {
+    "messageId": "a1b2c3d4-0001-4000-8000-100000000001",
+    "correlationId": "retry-demo-correo-pago-001",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente.pago@davivienda.hn"
+    ],
+    "ccAddresses": null,
+    "subject": "Confirmacion de pago - Intento 1",
+    "status": "Retrying",
+    "statusMessage": "Reintentos de Login: 1/3 - Detail Why: An error occurred while sending the request.",
+    "sentAtUtc": "2026-03-02T02:15:10.000000+00:00",
+    "durationMs": 312,
+    "retryCount": 1,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "a1b2c3d4-0001-4000-8000-100000000002",
+    "correlationId": "retry-demo-correo-pago-001",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente.pago@davivienda.hn"
+    ],
+    "ccAddresses": null,
+    "subject": "Confirmacion de pago - Intento 1",
+    "status": "Sent",
+    "statusMessage": null,
+    "sentAtUtc": "2026-03-02T02:15:11.000000+00:00",
+    "durationMs": 289,
+    "retryCount": 1,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "b2c3d4e5-0002-4000-8000-200000000001",
+    "correlationId": "retry-demo-alerta-saldo-002",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente.saldo@davivienda.hn"
+    ],
+    "ccAddresses": null,
+    "subject": "Alerta de saldo bajo",
+    "status": "Retrying",
+    "statusMessage": "Reintentos de Login: 1/3 - Detail Why: HTTP 503 Service Unavailable - El servicio de correo no responde",
+    "sentAtUtc": "2026-03-02T02:16:00.000000+00:00",
+    "durationMs": 500,
+    "retryCount": 1,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "b2c3d4e5-0002-4000-8000-200000000002",
+    "correlationId": "retry-demo-alerta-saldo-002",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente.saldo@davivienda.hn"
+    ],
+    "ccAddresses": null,
+    "subject": "Alerta de saldo bajo",
+    "status": "Retrying",
+    "statusMessage": "Reintentos de Login: 2/3 - Detail Why: HTTP 503 Service Unavailable - El servicio de correo no responde",
+    "sentAtUtc": "2026-03-02T02:16:01.500000+00:00",
+    "durationMs": 487,
+    "retryCount": 2,
+    "hasAttachments": false,
+    "environment": "DEV"
+  },
+  {
+    "messageId": "b2c3d4e5-0002-4000-8000-200000000003",
+    "correlationId": "retry-demo-alerta-saldo-002",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente.saldo@davivienda.hn"
+    ],
+    "ccAddresses": null,
+    "subject": "Alerta de saldo bajo",
+    "status": "Sent",
+    "statusMessage": null,
+    "sentAtUtc": "2026-03-02T02:16:03.200000+00:00",
+    "durationMs": 201,
+    "retryCount": 2,
+    "hasAttachments": false,
+    "environment": "DEV"
+
   }
 ]

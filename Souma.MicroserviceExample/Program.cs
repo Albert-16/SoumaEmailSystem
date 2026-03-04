@@ -30,7 +30,9 @@ var app = builder.Build();
 
 // ============================================================================
 // ENDPOINT: POST /api/email/send
-// Simula el envío de un email y registra el resultado en el log de trazabilidad.
+// Simula el envío de un email con reintentos de login (hasta 3 intentos).
+// Cada intento fallido intermedio se registra como Retrying en el log.
+// El resultado final (Sent o Failed) se registra al terminar el ciclo.
 // ============================================================================
 app.MapPost("/api/email/send", async (
     SendEmailRequest request,
@@ -39,29 +41,84 @@ app.MapPost("/api/email/send", async (
     ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
-    // Medir duración de la operación de envío con Stopwatch
-    Stopwatch cronometro = Stopwatch.StartNew();
-    EmailSendResult resultado;
+    const int MaxReintentos = 3;
 
-    try
+    EmailSendResult resultado = new() { Success = false, Message = "Sin intentos realizados" };
+    int retryCount = 0;
+    long lastDurationMs = 0;
+
+    // Ciclo de reintentos de login: hasta MaxReintentos intentos
+    for (int intento = 1; intento <= MaxReintentos; intento++)
     {
-        resultado = await emailSender.SendAsync(request, cancellationToken);
-    }
-    catch (Exception ex)
-    {
-        // Si el sender lanza excepción, capturar como resultado fallido
-        resultado = new EmailSendResult
+        Stopwatch cronometro = Stopwatch.StartNew();
+
+        try
         {
-            Success = false,
-            Message = $"{ex.GetType().Name}: {ex.Message}"
-        };
-    }
+            resultado = await emailSender.SendAsync(request, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // Si el sender lanza excepción, capturar como resultado fallido
+            resultado = new EmailSendResult
+            {
+                Success = false,
+                Message = $"{ex.GetType().Name}: {ex.Message}"
+            };
+        }
 
-    cronometro.Stop();
+        cronometro.Stop();
+        lastDurationMs = cronometro.ElapsedMilliseconds;
+
+        // Si el envío fue exitoso, salir del ciclo de reintentos
+        if (resultado.Success)
+            break;
+
+        // Envío fallido: si quedan más intentos, logar como Retrying y esperar
+        bool hayMasIntentos = intento < MaxReintentos;
+        if (hayMasIntentos)
+        {
+            retryCount = intento;
+
+            // =================================================================
+            // CLAVE: Logar el intento fallido como Retrying (NO como Failed),
+            // ya que aún hay más intentos disponibles. El CorrelationId vincula
+            // todos los intentos de este mismo correo en el dashboard.
+            // =================================================================
+            EmailLogDto logReintento = new()
+            {
+                CorrelationId = request.CorrelationId,
+                SourceMicroservice = "Souma.MicroserviceExample",
+                SenderAddress = request.SenderAddress,
+                RecipientAddresses = request.RecipientAddresses,
+                CcAddresses = request.CcAddresses,
+                Subject = request.Subject,
+                Status = EmailStatus.Retrying,
+                StatusMessage = $"Reintentos de Login: {intento}/{MaxReintentos} - Detail Why: {resultado.Message}",
+                SentAtUtc = DateTimeOffset.UtcNow,
+                DurationMs = lastDurationMs,
+                RetryCount = intento,
+                HasAttachments = request.HasAttachments,
+                Environment = DeploymentEnvironment.DEV
+            };
+
+            await logCollector.LogEmailAsync(logReintento, cancellationToken);
+
+            logger.LogWarning(
+                "Reintento {Intento}/{Max} hacia {Destinatarios} — CorrelationId: {CorrelationId}",
+                intento, MaxReintentos,
+                string.Join(", ", request.RecipientAddresses),
+                request.CorrelationId);
+
+            // Espera breve antes del siguiente intento (backoff simple)
+            await Task.Delay(500, cancellationToken);
+        }
+    }
 
     // ==========================================================================
-    // 3. Crear el DTO de log y llamar a LogEmailAsync — esto es lo único que
-    //    necesitas agregar a tu flujo existente de envío de emails.
+    // 3. Logar el resultado final del ciclo de reintentos:
+    //    - Si algún intento fue exitoso → Status = Sent
+    //    - Si todos los intentos fallaron → Status = Failed
+    //    RetryCount indica cuántos reintentos intermedios hubo antes del resultado final.
     // ==========================================================================
     EmailLogDto logEntry = new()
     {
@@ -74,7 +131,8 @@ app.MapPost("/api/email/send", async (
         Status = resultado.Success ? EmailStatus.Sent : EmailStatus.Failed,
         StatusMessage = resultado.Success ? null : resultado.Message,
         SentAtUtc = DateTimeOffset.UtcNow,
-        DurationMs = cronometro.ElapsedMilliseconds,
+        DurationMs = lastDurationMs,
+        RetryCount = retryCount,
         HasAttachments = request.HasAttachments,
         Environment = DeploymentEnvironment.DEV
     };
@@ -86,7 +144,7 @@ app.MapPost("/api/email/send", async (
         "Email {Estado} hacia {Destinatarios} en {DuracionMs}ms — MessageId: {MessageId}",
         logEntry.Status,
         string.Join(", ", request.RecipientAddresses),
-        cronometro.ElapsedMilliseconds,
+        lastDurationMs,
         logEntry.MessageId);
 
     // Retornar respuesta tipada
@@ -95,7 +153,7 @@ app.MapPost("/api/email/send", async (
         Success = resultado.Success,
         MessageId = logEntry.MessageId,
         Message = resultado.Message,
-        DurationMs = cronometro.ElapsedMilliseconds
+        DurationMs = lastDurationMs
     };
 
     return resultado.Success
