@@ -16,9 +16,10 @@ namespace Souma.EmailLogging.Models;
 public sealed record EmailLogDto
 {
     /// <summary>
-    /// Identificador único del registro de log. Se genera automáticamente al crear la instancia.
+    /// Identificador del mensaje retornado por la API de envío.
+    /// Vacío cuando el envío falló y no se obtuvo respuesta de la API.
     /// </summary>
-    public Guid MessageId { get; init; } = Guid.NewGuid();
+    public string MessageId { get; init; } = "";
 
     /// <summary>
     /// Identificador de correlación para vincular reintentos del mismo email lógico.

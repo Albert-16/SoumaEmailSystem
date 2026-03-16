@@ -59,6 +59,7 @@ public sealed class EmailLogCollectorTests : IDisposable
         EmailStatus status = EmailStatus.Sent,
         string microservice = "TestService") => new()
     {
+        MessageId = status == EmailStatus.Sent ? $"MSG-{Guid.NewGuid():N}" : "",
         SourceMicroservice = microservice,
         SenderAddress = "sender@davivienda.hn",
         RecipientAddresses = ["recipient@davivienda.hn"],
@@ -85,21 +86,23 @@ public sealed class EmailLogCollectorTests : IDisposable
         {
             return
             [
-                new() { StepOrder = 1, StepCode = "VALIDATE_RECIPIENTS", StepName = "Validar Destinatarios", StepStatus = PipelineStepStatus.OK, DurationMs = 5, ExecutedAtUtc = now },
-                new() { StepOrder = 2, StepCode = "LOAD_TEMPLATE", StepName = "Cargar Plantilla", StepStatus = PipelineStepStatus.OK, DurationMs = 10, ExecutedAtUtc = now },
-                new() { StepOrder = 3, StepCode = "PROCESS_VARIABLES", StepName = "Procesar Variables", StepStatus = PipelineStepStatus.OK, DurationMs = 8, ExecutedAtUtc = now },
-                new() { StepOrder = 4, StepCode = "PREPARE_ATTACHMENTS", StepName = "Preparar Adjuntos", StepStatus = PipelineStepStatus.OK, DurationMs = 3, ExecutedAtUtc = now },
-                new() { StepOrder = 5, StepCode = "SMTP_SEND", StepName = "Enviar por SMTP", StepStatus = PipelineStepStatus.OK, DurationMs = 120, ExecutedAtUtc = now }
+                new() { StepOrder = 1, StepCode = "SUBJECT_AND_PROVIDER", StepName = "Asunto y Proveedor", StepStatus = PipelineStepStatus.OK, DurationMs = 5, ExecutedAtUtc = now },
+                new() { StepOrder = 2, StepCode = "MAIL_TEXT", StepName = "Texto del Correo", StepStatus = PipelineStepStatus.OK, DurationMs = 10, ExecutedAtUtc = now },
+                new() { StepOrder = 3, StepCode = "MAIL_VARS", StepName = "Variables de Plantilla", StepStatus = PipelineStepStatus.OK, DurationMs = 8, ExecutedAtUtc = now },
+                new() { StepOrder = 4, StepCode = "MAIL_IMAGES", StepName = "Imagenes del Correo", StepStatus = PipelineStepStatus.OK, DurationMs = 3, ExecutedAtUtc = now },
+                new() { StepOrder = 5, StepCode = "MAIL_TO", StepName = "Destinatarios", StepStatus = PipelineStepStatus.OK, DurationMs = 4, ExecutedAtUtc = now },
+                new() { StepOrder = 6, StepCode = "MAIL_ATTACHMENTS", StepName = "Adjuntos", StepStatus = PipelineStepStatus.OK, DurationMs = 3, ExecutedAtUtc = now }
             ];
         }
 
         return
         [
-            new() { StepOrder = 1, StepCode = "VALIDATE_RECIPIENTS", StepName = "Validar Destinatarios", StepStatus = PipelineStepStatus.OK, DurationMs = 5, ExecutedAtUtc = now },
-            new() { StepOrder = 2, StepCode = "LOAD_TEMPLATE", StepName = "Cargar Plantilla", StepStatus = PipelineStepStatus.Failed, Message = "Plantilla 'TestTemplate' no encontrada", DurationMs = 12, ExecutedAtUtc = now },
-            new() { StepOrder = 3, StepCode = "PROCESS_VARIABLES", StepName = "Procesar Variables", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
-            new() { StepOrder = 4, StepCode = "PREPARE_ATTACHMENTS", StepName = "Preparar Adjuntos", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
-            new() { StepOrder = 5, StepCode = "SMTP_SEND", StepName = "Enviar por SMTP", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now }
+            new() { StepOrder = 1, StepCode = "SUBJECT_AND_PROVIDER", StepName = "Asunto y Proveedor", StepStatus = PipelineStepStatus.OK, DurationMs = 5, ExecutedAtUtc = now },
+            new() { StepOrder = 2, StepCode = "MAIL_TEXT", StepName = "Texto del Correo", StepStatus = PipelineStepStatus.Failed, Message = "Plantilla 'TestTemplate' no encontrada", DurationMs = 12, ExecutedAtUtc = now },
+            new() { StepOrder = 3, StepCode = "MAIL_VARS", StepName = "Variables de Plantilla", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
+            new() { StepOrder = 4, StepCode = "MAIL_IMAGES", StepName = "Imagenes del Correo", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
+            new() { StepOrder = 5, StepCode = "MAIL_TO", StepName = "Destinatarios", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
+            new() { StepOrder = 6, StepCode = "MAIL_ATTACHMENTS", StepName = "Adjuntos", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now }
         ];
     }
 
@@ -472,7 +475,7 @@ public sealed class EmailLogCollectorTests : IDisposable
         Assert.Equal(log.AttachmentCount, deserializado.AttachmentCount);
         Assert.NotNull(deserializado.QueuedAtUtc);
         Assert.NotNull(deserializado.PipelineSteps);
-        Assert.Equal(5, deserializado.PipelineSteps.Count);
+        Assert.Equal(6, deserializado.PipelineSteps.Count);
         Assert.All(deserializado.PipelineSteps, s => Assert.Equal(PipelineStepStatus.OK, s.StepStatus));
     }
 
@@ -487,17 +490,18 @@ public sealed class EmailLogCollectorTests : IDisposable
 
         // Assert
         Assert.NotNull(log.PipelineSteps);
-        Assert.Equal(5, log.PipelineSteps.Count);
+        Assert.Equal(6, log.PipelineSteps.Count);
 
         // Paso 1 OK
         Assert.Equal(PipelineStepStatus.OK, log.PipelineSteps[0].StepStatus);
         // Paso 2 Failed
         Assert.Equal(PipelineStepStatus.Failed, log.PipelineSteps[1].StepStatus);
         Assert.Contains("no encontrada", log.PipelineSteps[1].Message);
-        // Pasos 3-5 Skipped
+        // Pasos 3-6 Skipped
         Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[2].StepStatus);
         Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[3].StepStatus);
         Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[4].StepStatus);
+        Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[5].StepStatus);
     }
 
     // =========================================================================

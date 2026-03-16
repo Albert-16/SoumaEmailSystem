@@ -133,8 +133,12 @@ namespace Souma.EmailLogging.Legacy
         // Campos base
         // =================================================================
 
+        /// <summary>
+        /// ID del mensaje retornado por la API al enviar exitosamente.
+        /// Vacio cuando el envio fallo y no se obtuvo respuesta de la API.
+        /// </summary>
         [JsonProperty("messageId")]
-        public Guid MessageId { get; set; }
+        public string MessageId { get; set; }
 
         [JsonProperty("correlationId", NullValueHandling = NullValueHandling.Ignore)]
         public string CorrelationId { get; set; }
@@ -239,7 +243,7 @@ namespace Souma.EmailLogging.Legacy
         /// </summary>
         public EmailLogEntry()
         {
-            MessageId = Guid.NewGuid();
+            MessageId = "";
             RecipientAddresses = new List<string>();
             Priority = EmailPriority.Normal;
         }
@@ -317,7 +321,7 @@ namespace Souma.EmailLogging.Legacy
         /// </param>
         public void Execute(int order, string code, string name, Action action)
         {
-            DateTimeOffset inicioUtc = DateTimeOffset.UtcNow;
+            DateTimeOffset inicioUtc = DateTimeOffset.Now;
 
             // Si ya fallo un paso anterior, marcar como Skipped y salir
             if (_hasFailed)
@@ -411,7 +415,7 @@ namespace Souma.EmailLogging.Legacy
                     StepStatus = _hasFailed ? PipelineStepStatus.Skipped : PipelineStepStatus.OK,
                     Message = _hasFailed ? "Paso omitido — un paso anterior fallo" : skipMessage,
                     DurationMs = 0,
-                    ExecutedAtUtc = DateTimeOffset.UtcNow
+                    ExecutedAtUtc = DateTimeOffset.Now
                 });
                 return;
             }
@@ -558,6 +562,7 @@ namespace Souma.EmailLogging.Legacy
         /// <summary>
         /// Registra un envio exitoso de email CON pipeline.
         /// </summary>
+        /// <param name="messageId">ID del mensaje retornado por la API de envio.</param>
         /// <param name="senderAddress">Direccion del remitente.</param>
         /// <param name="recipientAddresses">Lista de destinatarios.</param>
         /// <param name="subject">Asunto del correo.</param>
@@ -572,6 +577,7 @@ namespace Souma.EmailLogging.Legacy
         /// <param name="queuedAtUtc">Momento en que se encolo la solicitud.</param>
         /// <param name="initiatedBy">ID del usuario/proceso que inicio el envio.</param>
         public static void LogSuccess(
+            string messageId,
             string senderAddress,
             List<string> recipientAddresses,
             string subject,
@@ -588,6 +594,7 @@ namespace Souma.EmailLogging.Legacy
         {
             LogEmail(new EmailLogEntry
             {
+                MessageId = messageId ?? "",
                 CorrelationId = correlationId,
                 SourceMicroservice = ServiceName,
                 SenderAddress = senderAddress,
@@ -596,7 +603,7 @@ namespace Souma.EmailLogging.Legacy
                 Subject = subject,
                 Status = EmailStatus.Sent,
                 StatusMessage = null,
-                SentAtUtc = DateTimeOffset.UtcNow,
+                SentAtUtc = DateTimeOffset.Now,
                 DurationMs = durationMs,
                 RetryCount = retryCount,
                 HasAttachments = hasAttachments,
@@ -656,7 +663,7 @@ namespace Souma.EmailLogging.Legacy
                 Subject = subject,
                 Status = EmailStatus.Failed,
                 StatusMessage = errorMessage,
-                SentAtUtc = DateTimeOffset.UtcNow,
+                SentAtUtc = DateTimeOffset.Now,
                 DurationMs = durationMs,
                 RetryCount = retryCount,
                 HasAttachments = hasAttachments,

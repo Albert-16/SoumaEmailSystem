@@ -82,6 +82,7 @@ app.MapPost("/api/email/send", async (
     // ==========================================================================
     EmailLogDto logEntry = new()
     {
+        MessageId = resultado.MessageId,
         CorrelationId = request.CorrelationId,
         SourceMicroservice = "Souma.MicroserviceExample",
         SenderAddress = request.SenderAddress,

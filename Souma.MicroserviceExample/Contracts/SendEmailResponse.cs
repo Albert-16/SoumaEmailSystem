@@ -13,7 +13,7 @@ public sealed record SendEmailResponse
     /// <summary>
     /// Identificador único del registro de log generado.
     /// </summary>
-    public required Guid MessageId { get; init; }
+    public required string MessageId { get; init; }
 
     /// <summary>
     /// Mensaje descriptivo del resultado.

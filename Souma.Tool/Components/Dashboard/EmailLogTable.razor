@@ -123,7 +123,7 @@
                 string search = _searchText;
                 query = query.Where(l =>
                     l.Subject.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    l.MessageId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    (l.MessageId?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     (l.CorrelationId?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
             }
 

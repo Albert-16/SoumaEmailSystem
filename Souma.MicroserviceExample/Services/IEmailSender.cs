@@ -28,6 +28,11 @@ public sealed record EmailSendResult
     public required bool Success { get; init; }
 
     /// <summary>
+    /// ID del mensaje retornado por la API de envío. Vacío si falló.
+    /// </summary>
+    public string MessageId { get; init; } = "";
+
+    /// <summary>
     /// Mensaje descriptivo del resultado (ej: "OK", "HTTP 503 Service Unavailable").
     /// </summary>
     public required string Message { get; init; }

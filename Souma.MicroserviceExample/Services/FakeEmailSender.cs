@@ -172,6 +172,7 @@ internal sealed class FakeEmailSender : IEmailSender
             return new EmailSendResult
             {
                 Success = false,
+                MessageId = "",
                 Message = mensajeFallo,
                 SmtpStatusCode = smtpCode,
                 PipelineSteps = pasos
@@ -182,6 +183,7 @@ internal sealed class FakeEmailSender : IEmailSender
         return new EmailSendResult
         {
             Success = true,
+            MessageId = $"MSG-{Guid.NewGuid():N}",
             Message = $"Email enviado exitosamente a {string.Join(", ", request.RecipientAddresses)}",
             SmtpStatusCode = 250,
             PipelineSteps = pasos

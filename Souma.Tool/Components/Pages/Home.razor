@@ -173,18 +173,18 @@
             }
 
             // Preservar el log seleccionado si el modal esta abierto
-            Guid? selectedId = _selectedLog?.MessageId;
+            string? selectedId = _selectedLog?.MessageId;
 
             RefreshData();
 
             // Restaurar referencia al log seleccionado en los datos actualizados
-            if (selectedId.HasValue)
+            if (!string.IsNullOrEmpty(selectedId))
             {
-                _selectedLog = _filteredLogs.FirstOrDefault(l => l.MessageId == selectedId.Value);
+                _selectedLog = _filteredLogs.FirstOrDefault(l => l.MessageId == selectedId);
 
                 // Si el log ya no esta en los filtrados, buscarlo en todos los logs
                 _selectedLog ??= ReaderService.GetAllLogs()
-                    .FirstOrDefault(l => l.MessageId == selectedId.Value);
+                    .FirstOrDefault(l => l.MessageId == selectedId);
 
                 // Actualizar intentos correlacionados si el modal sigue abierto
                 if (_selectedLog is not null && !string.IsNullOrWhiteSpace(_selectedLog.CorrelationId))
