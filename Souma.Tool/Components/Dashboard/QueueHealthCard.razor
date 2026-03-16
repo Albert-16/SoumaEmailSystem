@@ -1,0 +1,32 @@
+@* Tarjeta de salud de la cola con tiempo promedio *@
+
+<div class="card">
+    <div class="card-title">Tiempo en Cola</div>
+    @if (IsLoading)
+    {
+        <div class="skeleton skeleton-text" style="width:80px;height:2rem;"></div>
+    }
+    else
+    {
+        <div class="card-value" style="color:@QueueColor;">
+            @if (AverageQueueTimeMs < 1000)
+            {
+                @($"{AverageQueueTimeMs:F0} ms")
+            }
+            else
+            {
+                @($"{AverageQueueTimeMs / 1000.0:F1} s")
+            }
+        </div>
+        <div class="card-subtitle">Promedio de espera en cola</div>
+    }
+</div>
+
+@code {
+    [Parameter] public double AverageQueueTimeMs { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+
+    private string QueueColor => AverageQueueTimeMs <= 1000 ? "var(--color-success)"
+        : AverageQueueTimeMs <= 5000 ? "var(--color-warning)"
+        : "var(--color-danger)";
+}

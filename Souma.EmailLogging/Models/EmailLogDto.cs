@@ -93,4 +93,81 @@ public sealed record EmailLogDto
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public required DeploymentEnvironment Environment { get; init; }
+
+    // =========================================================================
+    // Campos extendidos — Fase 2 de trazabilidad profesional
+    // Todos son opcionales/nullable para retrocompatibilidad con JSON existentes.
+    // =========================================================================
+
+    /// <summary>
+    /// Nombre del servidor/instancia que procesó el envío.
+    /// Crítico cuando hay múltiples instancias detrás de un balanceador.
+    /// Se captura automáticamente con <c>System.Environment.MachineName</c>.
+    /// </summary>
+    public string? HostName { get; init; }
+
+    /// <summary>
+    /// Código de respuesta SMTP numérico (250=OK, 503=Service Unavailable, 550=Mailbox not found).
+    /// Permite filtrar y agrupar errores por tipo, a diferencia de <see cref="StatusMessage"/> que es texto libre.
+    /// </summary>
+    public int? SmtpStatusCode { get; init; }
+
+    /// <summary>
+    /// Tamaño total del mensaje en bytes (headers + body + adjuntos).
+    /// Permite detectar emails anómalamente grandes que afectan rendimiento.
+    /// </summary>
+    public long? EmailSizeBytes { get; init; }
+
+    /// <summary>
+    /// Cantidad exacta de archivos adjuntos. Complementa <see cref="HasAttachments"/>
+    /// con granularidad numérica para análisis de impacto en rendimiento.
+    /// </summary>
+    public int AttachmentCount { get; init; }
+
+    /// <summary>
+    /// Tipo de contenido del cuerpo del email (PlainText o Html).
+    /// Útil para diagnosticar problemas de renderizado.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public EmailContentType? ContentType { get; init; }
+
+    /// <summary>
+    /// Tipo de transacción bancaria que generó el email.
+    /// Ejemplos: "OTP", "EstadoCuenta", "AlertaFraude", "AprobacionPrestamo".
+    /// Permite agrupar emails por flujo de negocio, no solo por microservicio.
+    /// </summary>
+    public string? TransactionType { get; init; }
+
+    /// <summary>
+    /// Nivel de prioridad del email. Emails de tipo "AlertaFraude" o "OTP" son Critical;
+    /// "EstadoCuenta" mensual es Normal. Permite priorizar investigación de fallos.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public EmailPriority Priority { get; init; } = EmailPriority.Normal;
+
+    /// <summary>
+    /// Momento UTC en que la solicitud fue recibida/encolada, separado de <see cref="SentAtUtc"/>.
+    /// La diferencia <c>SentAtUtc - QueuedAtUtc</c> revela el tiempo de espera en cola.
+    /// </summary>
+    public DateTimeOffset? QueuedAtUtc { get; init; }
+
+    /// <summary>
+    /// Identificador del usuario o proceso que inició el envío (NO el email sender).
+    /// Ejemplo: "Sistema", "USR-45612", "BATCH-Nocturno".
+    /// Solo IDs opacos — nunca nombre real ni información personal.
+    /// </summary>
+    public string? InitiatedBy { get; init; }
+
+    /// <summary>
+    /// Dirección IP de la instancia/servicio que hizo la solicitud HTTP al endpoint de envío.
+    /// Permite correlacionar con logs de infraestructura y detectar solicitudes anómalas.
+    /// </summary>
+    public string? RequestOriginIp { get; init; }
+
+    /// <summary>
+    /// Pasos del pipeline de envío con su estado individual.
+    /// Cada paso registra si fue exitoso, falló o fue omitido.
+    /// Null para registros antiguos que no capturaron el pipeline.
+    /// </summary>
+    public List<PipelineStep>? PipelineSteps { get; init; }
 }

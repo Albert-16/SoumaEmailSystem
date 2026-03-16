@@ -1,54 +1,128 @@
-@* Panel de filtros consolidado para el dashboard *@
+@* Panel de filtros unificado — Quick filters + filtros avanzados en tarjeta cohesiva *@
 
-<div class="filters-panel">
-    <div class="filters-grid">
-        <div class="filter-group">
-            <label>Fecha Desde</label>
-            <input type="date" @bind="Filter.DateFrom" />
+<div class="filters-section">
+    @* --- Encabezado con titulo y quick filters --- *@
+    <div class="filters-section-header">
+        <div class="filters-section-title-row">
+            <span class="filters-section-icon"></span>
+            <span class="filters-section-title">Filtros</span>
+            <button class="filters-toggle-btn" @onclick="() => _expanded = !_expanded">
+                @(_expanded ? "Ocultar" : "Mostrar avanzados")
+            </button>
         </div>
-        <div class="filter-group">
-            <label>Fecha Hasta</label>
-            <input type="date" @bind="Filter.DateTo" />
-        </div>
-        <div class="filter-group">
-            <label>Microservicio</label>
-            <select @bind="SelectedMicroservice">
-                <option value="">-- Todos --</option>
-                @foreach (string ms in AvailableMicroservices)
-                {
-                    <option value="@ms">@ms</option>
-                }
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Estado</label>
-            <select @bind="SelectedStatus">
-                <option value="">-- Todos --</option>
-                <option value="Sent">Sent</option>
-                <option value="Failed">Failed</option>
-                <option value="Pending">Pending</option>
-                <option value="Retrying">Retrying</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Remitente</label>
-            <input type="text" placeholder="Buscar remitente..." @bind="Filter.SenderFilter" />
-        </div>
-        <div class="filter-group">
-            <label>Destinatario</label>
-            <input type="text" placeholder="Buscar destinatario..." @bind="Filter.RecipientFilter" />
-        </div>
-        <div class="filter-actions">
-            <button class="btn btn-primary btn-sm" @onclick="OnApply">Aplicar</button>
-            <button class="btn btn-secondary btn-sm" @onclick="OnClear">Limpiar</button>
+        <div class="filters-quick-row">
+            <button class="qf-pill @(_activeQuick == "failed" ? "qf-pill-active qf-pill-danger" : "")"
+                    @onclick='() => ToggleQuick("failed")'>
+                <span class="qf-dot qf-dot-danger"></span> Solo Fallidos
+            </button>
+            <button class="qf-pill @(_activeQuick == "lastHour" ? "qf-pill-active qf-pill-info" : "")"
+                    @onclick='() => ToggleQuick("lastHour")'>
+                <span class="qf-dot qf-dot-info"></span> Ultima Hora
+            </button>
+            <button class="qf-pill @(_activeQuick == "critical" ? "qf-pill-active qf-pill-critical" : "")"
+                    @onclick='() => ToggleQuick("critical")'>
+                <span class="qf-dot qf-dot-critical"></span> Criticos
+            </button>
+            <button class="qf-pill @(_activeQuick == "slaViolated" ? "qf-pill-active qf-pill-warning" : "")"
+                    @onclick='() => ToggleQuick("slaViolated")'>
+                <span class="qf-dot qf-dot-warning"></span> SLA Violados
+            </button>
+            <button class="qf-pill @(_activeQuick == "pipelineErrors" ? "qf-pill-active qf-pill-purple" : "")"
+                    @onclick='() => ToggleQuick("pipelineErrors")'>
+                <span class="qf-dot qf-dot-purple"></span> Errores Pipeline
+            </button>
         </div>
     </div>
+
+    @* --- Panel avanzado colapsable --- *@
+    @if (_expanded)
+    {
+        <div class="filters-advanced">
+            <div class="filters-row">
+                <div class="filter-field">
+                    <label>Fecha Desde</label>
+                    <input type="date" @bind="Filter.DateFrom" />
+                </div>
+                <div class="filter-field">
+                    <label>Fecha Hasta</label>
+                    <input type="date" @bind="Filter.DateTo" />
+                </div>
+                <div class="filter-field">
+                    <label>Microservicio</label>
+                    <select @bind="SelectedMicroservice">
+                        <option value="">Todos</option>
+                        @foreach (string ms in AvailableMicroservices)
+                        {
+                            <option value="@ms">@ms</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Estado</label>
+                    <select @bind="SelectedStatus">
+                        <option value="">Todos</option>
+                        <option value="Sent">Sent</option>
+                        <option value="Failed">Failed</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Retrying">Retrying</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="filter-field">
+                    <label>Prioridad</label>
+                    <select @bind="Filter.SelectedPriority">
+                        <option value="">Todas</option>
+                        <option value="Low">Low</option>
+                        <option value="Normal">Normal</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Tipo Transaccion</label>
+                    <select @bind="Filter.TransactionType">
+                        <option value="">Todos</option>
+                        @foreach (string tt in AvailableTransactionTypes)
+                        {
+                            <option value="@tt">@tt</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Remitente</label>
+                    <input type="text" placeholder="Buscar..." @bind="Filter.SenderFilter" />
+                </div>
+                <div class="filter-field">
+                    <label>Destinatario</label>
+                    <input type="text" placeholder="Buscar..." @bind="Filter.RecipientFilter" />
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="filter-field">
+                    <label>Duracion minima (ms)</label>
+                    <input type="number" placeholder="Ej: 2000" @bind="Filter.MinDurationMs" />
+                </div>
+                <div class="filter-field"></div>
+                <div class="filter-field"></div>
+                <div class="filter-field filters-actions-cell">
+                    <button class="btn-filter-apply" @onclick="OnApply">Aplicar</button>
+                    <button class="btn-filter-clear" @onclick="OnClear">Limpiar</button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     [Parameter] public DashboardFilter Filter { get; set; } = new();
     [Parameter] public List<string> AvailableMicroservices { get; set; } = [];
+    [Parameter] public List<string> AvailableTransactionTypes { get; set; } = [];
     [Parameter] public EventCallback OnFiltersApplied { get; set; }
+    [Parameter] public int SlaThresholdMs { get; set; } = 2000;
+
+    private bool _expanded;
+    private string? _activeQuick;
 
     private string SelectedMicroservice
     {
@@ -61,7 +135,7 @@
 
     private string SelectedStatus
     {
-        get => Filter.SelectedStatuses.FirstOrDefault().ToString() ?? "";
+        get => Filter.SelectedStatuses.Count > 0 ? Filter.SelectedStatuses[0].ToString() : "";
         set
         {
             Filter.SelectedStatuses = string.IsNullOrEmpty(value) ? [] :
@@ -71,12 +145,62 @@
 
     private async Task OnApply()
     {
+        _activeQuick = null;
         await OnFiltersApplied.InvokeAsync();
     }
 
     private async Task OnClear()
     {
+        _activeQuick = null;
         Filter.Clear();
+        await OnFiltersApplied.InvokeAsync();
+    }
+
+    private async Task ToggleQuick(string filterName)
+    {
+        if (_activeQuick == filterName)
+        {
+            _activeQuick = null;
+            Filter.Clear();
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+            Filter.DateFrom = today;
+            Filter.DateTo = today;
+        }
+        else
+        {
+            _activeQuick = filterName;
+            Filter.Clear();
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            switch (filterName)
+            {
+                case "failed":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.SelectedStatuses = [EmailStatus.Failed];
+                    break;
+                case "lastHour":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    break;
+                case "critical":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.SelectedPriority = "Critical";
+                    break;
+                case "slaViolated":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.MinDurationMs = SlaThresholdMs;
+                    break;
+                case "pipelineErrors":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.HasPipelineErrors = true;
+                    break;
+            }
+        }
+
         await OnFiltersApplied.InvokeAsync();
     }
 }

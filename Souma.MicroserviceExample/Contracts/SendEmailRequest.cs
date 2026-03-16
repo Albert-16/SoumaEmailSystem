@@ -39,4 +39,35 @@ public sealed record SendEmailRequest
     /// Indica si el email incluye archivos adjuntos.
     /// </summary>
     public bool HasAttachments { get; init; }
+
+    /// <summary>
+    /// Tipo de transacción bancaria que genera el email.
+    /// Ejemplos: "OTP", "EstadoCuenta", "AlertaFraude", "AprobacionPrestamo".
+    /// </summary>
+    public string? TransactionType { get; init; }
+
+    /// <summary>
+    /// Nivel de prioridad del email.
+    /// </summary>
+    public string? Priority { get; init; }
+
+    /// <summary>
+    /// Tipo de contenido del cuerpo: "PlainText" o "Html".
+    /// </summary>
+    public string? ContentType { get; init; }
+
+    /// <summary>
+    /// Cantidad de archivos adjuntos.
+    /// </summary>
+    public int AttachmentCount { get; init; }
+
+    /// <summary>
+    /// Tamaño estimado del email en bytes.
+    /// </summary>
+    public long? EmailSizeBytes { get; init; }
+
+    /// <summary>
+    /// Identificador del usuario o proceso que inició el envío (ID opaco, no PII).
+    /// </summary>
+    public string? InitiatedBy { get; init; }
 }

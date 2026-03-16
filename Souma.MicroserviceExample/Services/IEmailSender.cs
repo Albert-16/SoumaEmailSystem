@@ -31,4 +31,16 @@ public sealed record EmailSendResult
     /// Mensaje descriptivo del resultado (ej: "OK", "HTTP 503 Service Unavailable").
     /// </summary>
     public required string Message { get; init; }
+
+    /// <summary>
+    /// Código de respuesta SMTP numérico. Null si no aplica (ej: error de conexión).
+    /// Valores comunes: 250 (OK), 421 (Service not available), 450 (Mailbox busy),
+    /// 503 (Bad sequence), 550 (Mailbox not found).
+    /// </summary>
+    public int? SmtpStatusCode { get; init; }
+
+    /// <summary>
+    /// Pasos del pipeline ejecutados durante el envío.
+    /// </summary>
+    public List<Souma.EmailLogging.Models.PipelineStep>? PipelineSteps { get; init; }
 }

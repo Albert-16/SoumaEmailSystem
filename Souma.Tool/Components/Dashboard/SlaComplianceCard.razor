@@ -1,0 +1,28 @@
+@* Tarjeta de cumplimiento SLA con percentiles *@
+
+<div class="card">
+    <div class="card-title">Cumplimiento SLA</div>
+    @if (IsLoading)
+    {
+        <div class="skeleton skeleton-text" style="width:80px;height:2rem;"></div>
+    }
+    else
+    {
+        <div class="card-value" style="color:@SlaColor;">@Metrics.SlaComplianceRate%</div>
+        <div class="card-subtitle">
+            P50: @(Metrics.P50)ms &nbsp;|&nbsp; P95: @(Metrics.P95)ms &nbsp;|&nbsp; P99: @(Metrics.P99)ms
+        </div>
+        <div class="sla-bar-container">
+            <div class="sla-bar" style="width:@(Math.Min(Metrics.SlaComplianceRate, 100))%;background-color:@SlaColor;"></div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public PerformanceMetrics Metrics { get; set; } = new();
+    [Parameter] public bool IsLoading { get; set; }
+
+    private string SlaColor => Metrics.SlaComplianceRate >= 95 ? "var(--color-success)"
+        : Metrics.SlaComplianceRate >= 85 ? "var(--color-warning)"
+        : "var(--color-danger)";
+}

@@ -13,10 +13,13 @@
 @* === Toast de nuevos datos === *@
 <ToastNotification Show="@_showToast" OnDismissed="() => _showToast = false" />
 
-@* === Tarjetas de métricas === *@
+@* === SECCION: Metricas en Tiempo Real === *@
+<SectionHeader Title="Metricas en Tiempo Real" />
+
 <div class="metrics-grid">
     <DailyVolumeCard TotalCount="@_summary.TotalCount"
                      DateLabel="@_todayLabel"
+                     Trend="@_volumeTrend"
                      IsLoading="@_loading" />
 
     <StatusDistributionCard Sent="@_summary.TotalSent"
@@ -26,7 +29,17 @@
                             IsLoading="@_loading" />
 
     <AverageDurationCard AverageDurationMs="@_summary.AverageDurationMs"
+                         P95Ms="@_perfMetrics.P95"
                          IsLoading="@_loading" />
+
+    <SlaComplianceCard Metrics="@_perfMetrics"
+                       IsLoading="@_loading" />
+
+    <PriorityBreakdownCard Breakdown="@_priorityBreakdown"
+                           IsLoading="@_loading" />
+
+    <QueueHealthCard AverageQueueTimeMs="@_avgQueueTime"
+                     IsLoading="@_loading" />
 
     <MicroserviceBreakdownCard Breakdown="@_microserviceBreakdown"
                                IsLoading="@_loading" />
@@ -35,12 +48,33 @@
                        IsLoading="@_loading" />
 </div>
 
-@* === Graficos === *@
+@* === SECCION: Tendencias === *@
+<SectionHeader Title="Tendencias" />
+
 <div class="charts-grid">
     <div class="card">
         <div class="card-title">Volumen Diario (Ultimos 7 dias)</div>
         <div class="chart-container">
             <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">Rendimiento P50 / P95 (Ultimos 7 dias)</div>
+        <div class="chart-container">
+            <canvas id="performanceChart"></canvas>
+        </div>
+    </div>
+    <HeatmapChart Data="@_heatmapData" />
+</div>
+
+@* === SECCION: Distribucion === *@
+<SectionHeader Title="Distribucion" />
+
+<div class="charts-grid">
+    <div class="card">
+        <div class="card-title">Emails por Microservicio (por Estado)</div>
+        <div class="chart-container">
+            <canvas id="stackedBarChart"></canvas>
         </div>
     </div>
     <div class="card">
@@ -50,16 +84,22 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-title">Emails por Microservicio</div>
+        <div class="card-title">Por Tipo de Transaccion</div>
         <div class="chart-container">
-            <canvas id="barChart"></canvas>
+            <canvas id="transactionTypeChart"></canvas>
         </div>
     </div>
 </div>
 
-@* === Panel de filtros === *@
+@* === SECCION: Actividad Reciente === *@
+<SectionHeader Title="Actividad Reciente" />
+
+<ActivityFeed Logs="@_filteredLogs" MaxItems="15" OnItemClicked="ShowDetail" />
+
+@* === SECCION: Filtros — Panel unificado con quick filters integrados === *@
 <FiltersPanel Filter="@_filter"
               AvailableMicroservices="@_availableMicroservices"
+              AvailableTransactionTypes="@_availableTransactionTypes"
               OnFiltersApplied="ApplyFilters" />
 
 @* === Boton de exportar CSV === *@
@@ -75,7 +115,9 @@
                OnRowClicked="ShowDetail" />
 
 @* === Modal de detalle === *@
-<EmailDetailModal Log="@_selectedLog" OnClose="CloseDetail" />
+<EmailDetailModal Log="@_selectedLog"
+                  CorrelatedAttempts="@_correlatedAttempts"
+                  OnClose="CloseDetail" />
 
 @code {
     private bool _loading = true;
@@ -83,19 +125,24 @@
     private DashboardFilter _filter = new();
     private List<EmailLogDto> _filteredLogs = [];
     private List<string> _availableMicroservices = [];
+    private List<string> _availableTransactionTypes = [];
     private EmailLogSummary _summary = EmptySummary();
     private Dictionary<string, int> _microserviceBreakdown = [];
     private Dictionary<string, int> _topRecipients = [];
+    private Dictionary<string, int> _priorityBreakdown = [];
     private double _recentFailureRate;
     private EmailLogDto? _selectedLog;
+    private List<EmailLogDto>? _correlatedAttempts;
     private string _todayLabel = "";
+    private PerformanceMetrics _perfMetrics = new();
+    private TrendData? _volumeTrend;
+    private double _avgQueueTime;
+    private int[,]? _heatmapData;
 
     protected override void OnInitialized()
     {
-        // Suscribirse a las actualizaciones del polling
         ReaderService.OnDataRefreshed += OnDataRefreshed;
 
-        // Configurar filtro por defecto: hoy
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         _filter.DateFrom = today;
         _filter.DateTo = today;
@@ -106,12 +153,10 @@
     {
         if (firstRender)
         {
-            // Cargar datos iniciales
             RefreshData();
             _loading = false;
             StateHasChanged();
 
-            // Pequeño delay para asegurar que el DOM está listo para Chart.js
             await Task.Delay(300);
             await RenderChartsAsync();
         }
@@ -127,7 +172,27 @@
                 ReaderService.AcknowledgeNewData();
             }
 
+            // Preservar el log seleccionado si el modal esta abierto
+            Guid? selectedId = _selectedLog?.MessageId;
+
             RefreshData();
+
+            // Restaurar referencia al log seleccionado en los datos actualizados
+            if (selectedId.HasValue)
+            {
+                _selectedLog = _filteredLogs.FirstOrDefault(l => l.MessageId == selectedId.Value);
+
+                // Si el log ya no esta en los filtrados, buscarlo en todos los logs
+                _selectedLog ??= ReaderService.GetAllLogs()
+                    .FirstOrDefault(l => l.MessageId == selectedId.Value);
+
+                // Actualizar intentos correlacionados si el modal sigue abierto
+                if (_selectedLog is not null && !string.IsNullOrWhiteSpace(_selectedLog.CorrelationId))
+                {
+                    _correlatedAttempts = ReaderService.GetCorrelatedAttempts(_selectedLog.CorrelationId);
+                }
+            }
+
             StateHasChanged();
 
             _ = RenderChartsAsync();
@@ -138,6 +203,7 @@
     {
         _filteredLogs = ReaderService.GetFilteredLogs(_filter);
         _availableMicroservices = ReaderService.GetAvailableMicroservices();
+        _availableTransactionTypes = ReaderService.GetAvailableTransactionTypes();
         _recentFailureRate = ReaderService.GetRecentFailureRate(60);
 
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -154,15 +220,26 @@
             .OrderByDescending(g => g.Count())
             .Take(5)
             .ToDictionary(g => g.Key, g => g.Count());
+
+        // Métricas extendidas
+        _perfMetrics = ReaderService.GetPerformanceMetrics(_filteredLogs);
+        _volumeTrend = ReaderService.GetVolumeTrend();
+        _priorityBreakdown = ReaderService.GetPriorityBreakdown(_filteredLogs);
+        _avgQueueTime = ReaderService.GetAverageQueueTime(_filteredLogs);
+
+        // Heatmap usa todos los logs (no filtrados) para los 7 dias
+        List<EmailLogDto> allLogs = ReaderService.GetAllLogs();
+        _heatmapData = ReaderService.GetHourlyHeatmapData(allLogs);
     }
 
     private async Task RenderChartsAsync()
     {
         try
         {
-            // Grafico de linea: volumen ultimos 7 dias
             List<EmailLogDto> allLogs = ReaderService.GetAllLogs();
             DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Grafico de linea: volumen ultimos 7 dias
             string[] lineLabels = new string[7];
             int[] lineData = new int[7];
 
@@ -177,18 +254,69 @@
 
             await ChartService.RenderLineChartAsync("lineChart", lineLabels, lineData);
 
+            // Grafico de rendimiento P50/P95 ultimos 7 dias
+            string[] perfLabels = new string[7];
+            double[] p50Data = new double[7];
+            double[] p95Data = new double[7];
+
+            for (int i = 6; i >= 0; i--)
+            {
+                DateOnly date = today.AddDays(-i);
+                perfLabels[6 - i] = date.ToString("MM/dd");
+                DateTimeOffset dayStart = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+                DateTimeOffset dayEnd = date.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc);
+
+                List<EmailLogDto> dayLogs = allLogs
+                    .Where(l => l.SentAtUtc >= dayStart && l.SentAtUtc <= dayEnd)
+                    .ToList();
+
+                PerformanceMetrics dayMetrics = ReaderService.GetPerformanceMetrics(dayLogs);
+                p50Data[6 - i] = dayMetrics.P50;
+                p95Data[6 - i] = dayMetrics.P95;
+            }
+
+            await ChartService.RenderPerformanceChartAsync("performanceChart", perfLabels, p50Data, p95Data);
+
             // Grafico de dona: distribucion de estados
             string[] doughnutLabels = ["Sent", "Failed", "Pending", "Retrying"];
             int[] doughnutData = [_summary.TotalSent, _summary.TotalFailed, _summary.TotalPending, _summary.TotalRetrying];
             string[] doughnutColors = ["#22c55e", "#ef4444", "#8b5cf6", "#f59e0b"];
             await ChartService.RenderDoughnutChartAsync("doughnutChart", doughnutLabels, doughnutData, doughnutColors);
 
-            // Grafico de barras: por microservicio
-            string[] barLabels = _microserviceBreakdown.Keys.ToArray();
-            int[] barData = _microserviceBreakdown.Values.ToArray();
-            if (barLabels.Length > 0)
+            // Grafico de barras apiladas por microservicio
+            string[] microservices = _microserviceBreakdown.Keys.ToArray();
+            if (microservices.Length > 0)
             {
-                await ChartService.RenderBarChartAsync("barChart", barLabels, barData);
+                int[] sentByMs = new int[microservices.Length];
+                int[] failedByMs = new int[microservices.Length];
+                int[] pendingByMs = new int[microservices.Length];
+                int[] retryingByMs = new int[microservices.Length];
+
+                for (int i = 0; i < microservices.Length; i++)
+                {
+                    List<EmailLogDto> msLogs = _filteredLogs
+                        .Where(l => l.SourceMicroservice == microservices[i])
+                        .ToList();
+                    sentByMs[i] = msLogs.Count(l => l.Status == EmailStatus.Sent);
+                    failedByMs[i] = msLogs.Count(l => l.Status == EmailStatus.Failed);
+                    pendingByMs[i] = msLogs.Count(l => l.Status == EmailStatus.Pending);
+                    retryingByMs[i] = msLogs.Count(l => l.Status == EmailStatus.Retrying);
+                }
+
+                await ChartService.RenderStackedBarChartAsync("stackedBarChart",
+                    microservices, sentByMs, failedByMs, pendingByMs, retryingByMs);
+            }
+
+            // Dona por TransactionType
+            Dictionary<string, int> ttBreakdown = ReaderService.GetTransactionTypeBreakdown(_filteredLogs);
+            if (ttBreakdown.Count > 0)
+            {
+                string[] ttLabels = ttBreakdown.Keys.ToArray();
+                int[] ttData = ttBreakdown.Values.ToArray();
+                string[] ttColors = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316", "#ec4899"];
+                // Tomar solo los colores necesarios
+                string[] coloresUsados = ttColors.Take(ttLabels.Length).ToArray();
+                await ChartService.RenderDoughnutChartAsync("transactionTypeChart", ttLabels, ttData, coloresUsados);
             }
         }
         catch (Exception)
@@ -203,9 +331,21 @@
         _ = RenderChartsAsync();
     }
 
-    private void ShowDetail(EmailLogDto log) => _selectedLog = log;
+    private void ShowDetail(EmailLogDto log)
+    {
+        _selectedLog = log;
 
-    private void CloseDetail() => _selectedLog = null;
+        // Cargar intentos correlacionados si hay CorrelationId
+        _correlatedAttempts = !string.IsNullOrWhiteSpace(log.CorrelationId)
+            ? ReaderService.GetCorrelatedAttempts(log.CorrelationId)
+            : null;
+    }
+
+    private void CloseDetail()
+    {
+        _selectedLog = null;
+        _correlatedAttempts = null;
+    }
 
     private async Task ExportCsv()
     {

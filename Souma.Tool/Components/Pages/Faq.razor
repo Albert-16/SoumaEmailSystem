@@ -1,0 +1,242 @@
+@page "/faq"
+@rendermode InteractiveServer
+
+<PageTitle>Souma Tool - Ayuda y Preguntas Frecuentes</PageTitle>
+
+<div class="faq-page">
+    <div class="faq-header">
+        <h1>¿Por que no veo mi correo?</h1>
+        <p class="faq-subtitle">
+            Guia de diagnostico para el sistema de trazabilidad de emails de Davivienda Honduras.
+            Si tu email no aparece en el dashboard, revisa las causas mas comunes a continuacion.
+        </p>
+    </div>
+
+    @* === SECCION: Errores Comunes === *@
+    <div class="faq-section">
+        <h2 class="faq-section-title">Errores Comunes</h2>
+
+        @foreach (var item in _faqItems)
+        {
+            <div class="faq-item @(item.IsOpen ? "faq-item-open" : "")">
+                <button class="faq-toggle" @onclick="() => item.IsOpen = !item.IsOpen">
+                    <span class="faq-toggle-icon">@(item.IsOpen ? "−" : "+")</span>
+                    <span class="faq-toggle-title">@item.Title</span>
+                    <span class="faq-toggle-code">@item.PipelineStep</span>
+                </button>
+                @if (item.IsOpen)
+                {
+                    <div class="faq-content">
+                        <div class="faq-description">@item.Description</div>
+                        <div class="faq-solution">
+                            <strong>Solucion:</strong> @item.Solution
+                        </div>
+                        @if (!string.IsNullOrEmpty(item.Example))
+                        {
+                            <div class="faq-example">
+                                <strong>Ejemplo de error en el log:</strong>
+                                <code class="faq-code-block">@item.Example</code>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @* === SECCION: Integracion Correcta === *@
+    <div class="faq-section">
+        <h2 class="faq-section-title">¿Como integrar correctamente?</h2>
+
+        <div class="faq-integration-card">
+            <h3>Llamada al servicio de correo (ejemplo)</h3>
+            <p>Tu servicio debe enviar un POST al endpoint de envio con todos los campos requeridos:</p>
+            <pre class="faq-code-block">
+POST /api/email/send
+Content-Type: application/json
+
+{
+  "senderAddress": "noreply@davivienda.hn",
+  "recipientAddresses": ["cliente@empresa.com"],
+  "subject": "Notificacion de Transferencia",
+  "body": "&lt;html&gt;...contenido...&lt;/html&gt;",
+  "transactionType": "NotificacionTransferencia",
+  "priority": "Normal",
+  "contentType": "Html",
+  "attachmentCount": 0,
+  "initiatedBy": "SistemaTransferencias"
+}</pre>
+        </div>
+
+        <div class="faq-integration-card">
+            <h3>Pipeline de envio</h3>
+            <p>Cada email pasa por 6 pasos en orden. Si un paso falla, los siguientes se omiten.
+               MailImages y MailAttachments son opcionales — si no aplican, el paso continua sin error:</p>
+            <div class="faq-pipeline-diagram">
+                <div class="faq-pipeline-step">
+                    <span class="faq-step-number">1</span>
+                    <span class="faq-step-name">SubjectAndProvider</span>
+                    <span class="faq-step-desc">Valida asunto y proveedor de correo</span>
+                </div>
+                <div class="faq-pipeline-arrow">→</div>
+                <div class="faq-pipeline-step">
+                    <span class="faq-step-number">2</span>
+                    <span class="faq-step-name">MailText</span>
+                    <span class="faq-step-desc">Carga texto/plantilla del correo</span>
+                </div>
+                <div class="faq-pipeline-arrow">→</div>
+                <div class="faq-pipeline-step">
+                    <span class="faq-step-number">3</span>
+                    <span class="faq-step-name">MailVars</span>
+                    <span class="faq-step-desc">Reemplaza variables de plantilla</span>
+                </div>
+                <div class="faq-pipeline-arrow">→</div>
+                <div class="faq-pipeline-step">
+                    <span class="faq-step-number">4</span>
+                    <span class="faq-step-name">MailImages</span>
+                    <span class="faq-step-desc">Carga imagenes inline (opcional)</span>
+                </div>
+                <div class="faq-pipeline-arrow">→</div>
+                <div class="faq-pipeline-step">
+                    <span class="faq-step-number">5</span>
+                    <span class="faq-step-name">MailTo</span>
+                    <span class="faq-step-desc">Valida y establece destinatarios</span>
+                </div>
+                <div class="faq-pipeline-arrow">→</div>
+                <div class="faq-pipeline-step">
+                    <span class="faq-step-number">6</span>
+                    <span class="faq-step-name">MailAttachments</span>
+                    <span class="faq-step-desc">Prepara adjuntos (opcional)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* === SECCION: Codigos del Pipeline === *@
+    <div class="faq-section">
+        <h2 class="faq-section-title">Codigos de Estado del Pipeline</h2>
+
+        <div class="faq-status-table-container">
+            <table class="faq-status-table">
+                <thead>
+                    <tr>
+                        <th>Estado</th>
+                        <th>Significado</th>
+                        <th>Accion Requerida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="status-badge status-sent">OK</span></td>
+                        <td>El paso se ejecuto exitosamente</td>
+                        <td>Ninguna — todo funciono correctamente</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-badge status-failed">Failed</span></td>
+                        <td>El paso fallo — los pasos siguientes fueron omitidos</td>
+                        <td>Revisar el mensaje de error del paso para diagnosticar la causa</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-badge status-pending">Skipped</span></td>
+                        <td>El paso no se ejecuto porque un paso anterior fallo</td>
+                        <td>Corregir el paso que fallo primero; este se ejecutara automaticamente</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-badge status-retrying">Warning</span></td>
+                        <td>El paso se completo pero con advertencias</td>
+                        <td>Revisar la advertencia — puede indicar datos incorrectos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @* === SECCION: Contacto === *@
+    <div class="faq-section faq-contact">
+        <h2 class="faq-section-title">¿Tu problema no aparece aqui?</h2>
+        <p>Si revisaste todas las causas anteriores y tu correo aun no aparece en el dashboard,
+           contacta al <strong>equipo de Arquitectura</strong> con la siguiente informacion:</p>
+        <ul>
+            <li>CorrelationId del email (si lo tienes)</li>
+            <li>Fecha y hora aproximada del envio</li>
+            <li>Microservicio desde el que se hizo el llamado</li>
+            <li>Captura del error (si aplica)</li>
+        </ul>
+    </div>
+
+    <div style="text-align:center;margin-top:2rem;">
+        <a href="/" class="btn btn-primary">Volver al Dashboard</a>
+    </div>
+</div>
+
+@code {
+    private readonly List<FaqItem> _faqItems =
+    [
+        new()
+        {
+            Title = "Falta Subject (Asunto) o proveedor no permitido",
+            PipelineStep = "SUBJECT_AND_PROVIDER",
+            Description = "El campo Asunto esta vacio o nulo, o el dominio del destinatario no esta en la lista de proveedores autorizados por la politica de seguridad del banco.",
+            Solution = "Validar que el campo 'Subject' no sea null ni string vacio. Verificar la lista de proveedores permitidos — solo se permiten dominios corporativos autorizados.",
+            Example = "Campo 'Subject' es requerido y no puede estar vacio\nProveedor @hotmail.com no permitido por politica de seguridad"
+        },
+        new()
+        {
+            Title = "Plantilla no encontrada o inactiva",
+            PipelineStep = "MAIL_TEXT",
+            Description = "El gestor de plantillas no tiene registrada la plantilla que se intenta usar, o la plantilla existe pero esta marcada como inactiva.",
+            Solution = "Verificar el nombre exacto de la plantilla en el gestor (mayusculas, minusculas, espacios). Si esta inactiva, verificar con el area responsable antes de reactivarla.",
+            Example = "Plantilla 'AlertaFraude_v2' no encontrada en el gestor\nPlantilla 'NotificacionTransferencia' esta marcada como inactiva"
+        },
+        new()
+        {
+            Title = "Variables de plantilla sin valor",
+            PipelineStep = "MAIL_VARS",
+            Description = "Las variables definidas en la plantilla ({NombreCliente}, {Monto}, etc.) no recibieron un valor al momento del envio. El sistema no puede enviar un email con variables sin resolver.",
+            Solution = "Asegurarse de pasar TODAS las variables requeridas por la plantilla. Revisar la documentacion de la plantilla para conocer las variables obligatorias.",
+            Example = "Variable {NombreCliente} no tiene valor asignado"
+        },
+        new()
+        {
+            Title = "Imagen no encontrada en el repositorio",
+            PipelineStep = "MAIL_IMAGES",
+            Description = "Una imagen inline referenciada en el correo no se encontro en el repositorio de imagenes. NOTA: Si el correo no usa imagenes, este paso continua sin error — es opcional.",
+            Solution = "Verificar que las imagenes referenciadas existan en el repositorio. Si el correo no necesita imagenes, este paso se completa automaticamente sin accion.",
+            Example = "Imagen 'banner_header.png' no encontrada en el repositorio de imagenes"
+        },
+        new()
+        {
+            Title = "Destinatario invalido o lista vacia",
+            PipelineStep = "MAIL_TO",
+            Description = "La direccion de correo del destinatario no es valida o la lista de destinatarios esta vacia. Se requiere al menos un destinatario valido.",
+            Solution = "Verificar que las direcciones de correo tengan formato valido y que la lista de destinatarios no este vacia.",
+            Example = "Direccion 'usuario@dominio-invalido' no es una direccion de correo valida\nLista de destinatarios esta vacia"
+        },
+        new()
+        {
+            Title = "Adjunto excede tamano o formato no permitido",
+            PipelineStep = "MAIL_ATTACHMENTS",
+            Description = "El archivo adjunto supera el limite de tamano (10MB) o su extension no esta permitida. NOTA: Si el correo no tiene adjuntos, este paso continua sin error — es opcional.",
+            Solution = "Verificar limite de tamano y formatos permitidos (.pdf, .xlsx, .docx, .png, .jpg, .csv). Archivos .exe, .bat, .cmd, .ps1 estan bloqueados.",
+            Example = "Archivo adjunto excede el limite de 10MB\nFormato .exe no permitido como adjunto"
+        },
+        new()
+        {
+            Title = "No veo el log en el dashboard",
+            PipelineStep = "N/A",
+            Description = "El correo no aparece en el dashboard de trazabilidad. Esto generalmente significa que el servicio de correo NO fue llamado correctamente o que el logging no se implemento en tu codigo.",
+            Solution = "ESTAS IMPLEMENTANDO MAL EL LLAMADO AL SERVICIO DE CORREO. Verifica que: (1) tu codigo llama al endpoint POST /api/email/send, (2) el request tiene todos los campos requeridos (senderAddress, recipientAddresses, subject, body), (3) no estas atrapando la excepcion sin propagar. Si usas el servicio ASMX, verifica que la referencia al servicio web es correcta.",
+            Example = ""
+        }
+    ];
+
+    private sealed class FaqItem
+    {
+        public string Title { get; set; } = "";
+        public string PipelineStep { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Solution { get; set; } = "";
+        public string Example { get; set; } = "";
+        public bool IsOpen { get; set; }
+    }
+}

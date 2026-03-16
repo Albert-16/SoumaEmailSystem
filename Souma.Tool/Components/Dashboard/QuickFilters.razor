@@ -1,0 +1,86 @@
+@* Barra de filtros rapidos — botones toggle de un click *@
+
+<div class="quick-filters">
+    <button class="quick-filter-btn @(_activeFilter == "failed" ? "quick-filter-active" : "")"
+            @onclick='() => Toggle("failed")'>
+        Solo Fallidos
+    </button>
+    <button class="quick-filter-btn @(_activeFilter == "lastHour" ? "quick-filter-active" : "")"
+            @onclick='() => Toggle("lastHour")'>
+        Ultima Hora
+    </button>
+    <button class="quick-filter-btn @(_activeFilter == "critical" ? "quick-filter-active" : "")"
+            @onclick='() => Toggle("critical")'>
+        Criticos
+    </button>
+    <button class="quick-filter-btn @(_activeFilter == "slaViolated" ? "quick-filter-active" : "")"
+            @onclick='() => Toggle("slaViolated")'>
+        SLA Violados
+    </button>
+    <button class="quick-filter-btn @(_activeFilter == "pipelineErrors" ? "quick-filter-active" : "")"
+            @onclick='() => Toggle("pipelineErrors")'>
+        Errores Pipeline
+    </button>
+</div>
+
+@code {
+    [Parameter] public DashboardFilter Filter { get; set; } = new();
+    [Parameter] public EventCallback OnFilterChanged { get; set; }
+    [Parameter] public int SlaThresholdMs { get; set; } = 2000;
+
+    private string? _activeFilter;
+
+    private async Task Toggle(string filterName)
+    {
+        if (_activeFilter == filterName)
+        {
+            // Desactivar filtro rapido
+            _activeFilter = null;
+            Filter.Clear();
+
+            // Restaurar filtro por defecto: hoy
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+            Filter.DateFrom = today;
+            Filter.DateTo = today;
+        }
+        else
+        {
+            // Activar filtro rapido
+            _activeFilter = filterName;
+            Filter.Clear();
+
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            switch (filterName)
+            {
+                case "failed":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.SelectedStatuses = [EmailStatus.Failed];
+                    break;
+                case "lastHour":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    // El filtro por hora se maneja en Home.razor filtrando por SentAtUtc
+                    break;
+                case "critical":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.SelectedPriority = "Critical";
+                    break;
+                case "slaViolated":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.MinDurationMs = SlaThresholdMs;
+                    break;
+                case "pipelineErrors":
+                    Filter.DateFrom = today;
+                    Filter.DateTo = today;
+                    Filter.HasPipelineErrors = true;
+                    break;
+            }
+        }
+
+        await OnFilterChanged.InvokeAsync();
+    }
+}

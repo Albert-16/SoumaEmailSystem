@@ -1,64 +1,241 @@
-@* Modal de detalle de un registro de email seleccionado *@
+@* Modal de detalle de un registro de email — con tabs y pipeline timeline *@
+@inject IJSRuntime JS
 
 @if (Log is not null)
 {
     <div class="modal-overlay" @onclick="OnClose">
-        <div class="modal-content" @onclick:stopPropagation="true">
+        <div class="modal-content modal-status-border-@Log.Status.ToString().ToLowerInvariant()" @onclick:stopPropagation="true">
             <div class="modal-header">
                 <h3>Detalle del Email</h3>
-                <button class="modal-close" @onclick="OnClose">X</button>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                    <button class="btn btn-secondary btn-sm" @onclick="CopyJson" title="Copiar JSON">
+                        Copiar JSON
+                    </button>
+                    <button class="modal-close" @onclick="OnClose">X</button>
+                </div>
             </div>
 
-            <div class="detail-grid">
-                <span class="detail-label">MessageId</span>
-                <span class="detail-value">@Log.MessageId</span>
-
-                <span class="detail-label">CorrelationId</span>
-                <span class="detail-value">@(Log.CorrelationId ?? "—")</span>
-
-                <span class="detail-label">Microservicio</span>
-                <span class="detail-value">@Log.SourceMicroservice</span>
-
-                <span class="detail-label">Remitente</span>
-                <span class="detail-value">@Log.SenderAddress</span>
-
-                <span class="detail-label">Destinatarios</span>
-                <span class="detail-value">@string.Join(", ", Log.RecipientAddresses)</span>
-
-                <span class="detail-label">CC</span>
-                <span class="detail-value">@(Log.CcAddresses is not null ? string.Join(", ", Log.CcAddresses) : "—")</span>
-
-                <span class="detail-label">Asunto</span>
-                <span class="detail-value">@Log.Subject</span>
-
-                <span class="detail-label">Estado</span>
-                <span class="detail-value">
-                    <span class="status-badge status-@Log.Status.ToString().ToLowerInvariant()">@Log.Status</span>
-                </span>
-
-                <span class="detail-label">Mensaje Estado</span>
-                <span class="detail-value" style="color:var(--color-danger);">@(Log.StatusMessage ?? "—")</span>
-
-                <span class="detail-label">Fecha Envio</span>
-                <span class="detail-value">@Log.SentAtUtc.ToString("yyyy-MM-dd HH:mm:ss") UTC</span>
-
-                <span class="detail-label">Duracion</span>
-                <span class="detail-value">@Log.DurationMs ms</span>
-
-                <span class="detail-label">Reintentos</span>
-                <span class="detail-value">@Log.RetryCount</span>
-
-                <span class="detail-label">Adjuntos</span>
-                <span class="detail-value">@(Log.HasAttachments ? "Si" : "No")</span>
-
-                <span class="detail-label">Ambiente</span>
-                <span class="detail-value">@Log.Environment</span>
+            @* Tabs de navegación *@
+            <div class="modal-tabs">
+                <button class="tab-btn @(_activeTab == 0 ? "tab-btn-active" : "")" @onclick="() => _activeTab = 0">General</button>
+                <button class="tab-btn @(_activeTab == 1 ? "tab-btn-active" : "")" @onclick="() => _activeTab = 1">Tecnico</button>
+                <button class="tab-btn @(_activeTab == 2 ? "tab-btn-active" : "")" @onclick="() => _activeTab = 2">Negocio</button>
+                <button class="tab-btn @(_activeTab == 3 ? "tab-btn-active" : "")" @onclick="() => _activeTab = 3">Pipeline</button>
             </div>
+
+            @* Tab 1: General *@
+            @if (_activeTab == 0)
+            {
+                <div class="detail-grid">
+                    <span class="detail-label">Estado</span>
+                    <span class="detail-value">
+                        <span class="status-badge status-@Log.Status.ToString().ToLowerInvariant()">@Log.Status</span>
+                        @if (Log.Priority != EmailPriority.Normal)
+                        {
+                            <span class="priority-badge priority-@Log.Priority.ToString().ToLowerInvariant()" style="margin-left:0.5rem;">@Log.Priority</span>
+                        }
+                    </span>
+
+                    <span class="detail-label">Remitente</span>
+                    <span class="detail-value">@Log.SenderAddress</span>
+
+                    <span class="detail-label">Destinatarios</span>
+                    <span class="detail-value">@string.Join(", ", Log.RecipientAddresses)</span>
+
+                    <span class="detail-label">CC</span>
+                    <span class="detail-value">@(Log.CcAddresses is not null ? string.Join(", ", Log.CcAddresses) : "—")</span>
+
+                    <span class="detail-label">Asunto</span>
+                    <span class="detail-value">@Log.Subject</span>
+
+                    <span class="detail-label">Mensaje Estado</span>
+                    <span class="detail-value" style="color:@(Log.Status == EmailStatus.Failed ? "var(--color-danger)" : "var(--text-primary)");">
+                        @(Log.StatusMessage ?? "—")
+                    </span>
+
+                    <span class="detail-label">Fecha Envio</span>
+                    <span class="detail-value">@Log.SentAtUtc.ToString("yyyy-MM-dd HH:mm:ss") UTC</span>
+
+                    <span class="detail-label">Duracion</span>
+                    <span class="detail-value">@Log.DurationMs ms</span>
+
+                    <span class="detail-label">Adjuntos</span>
+                    <span class="detail-value">
+                        @if (Log.AttachmentCount > 0)
+                        {
+                            @($"Si ({Log.AttachmentCount} archivos)")
+                        }
+                        else if (Log.HasAttachments)
+                        {
+                            @("Si")
+                        }
+                        else
+                        {
+                            @("No")
+                        }
+                    </span>
+
+                    <span class="detail-label">Ambiente</span>
+                    <span class="detail-value">@Log.Environment</span>
+                </div>
+            }
+
+            @* Tab 2: Tecnico *@
+            @if (_activeTab == 1)
+            {
+                <div class="detail-grid">
+                    <span class="detail-label">MessageId</span>
+                    <span class="detail-value" style="font-family:monospace;font-size:0.78rem;">
+                        @Log.MessageId
+                        <button class="btn-icon" @onclick="() => CopyText(Log.MessageId.ToString())" title="Copiar">⧉</button>
+                    </span>
+
+                    <span class="detail-label">CorrelationId</span>
+                    <span class="detail-value" style="font-family:monospace;font-size:0.78rem;">
+                        @(Log.CorrelationId ?? "—")
+                    </span>
+
+                    <span class="detail-label">Host</span>
+                    <span class="detail-value">@(Log.HostName ?? "—")</span>
+
+                    <span class="detail-label">SMTP Code</span>
+                    <span class="detail-value">@(Log.SmtpStatusCode?.ToString() ?? "—")</span>
+
+                    <span class="detail-label">Duracion Total</span>
+                    <span class="detail-value">@Log.DurationMs ms</span>
+
+                    <span class="detail-label">En Cola</span>
+                    <span class="detail-value">
+                        @if (Log.QueuedAtUtc.HasValue)
+                        {
+                            @($"{(Log.SentAtUtc - Log.QueuedAtUtc.Value).TotalMilliseconds:F0} ms")
+                        }
+                        else
+                        {
+                            @("—")
+                        }
+                    </span>
+
+                    <span class="detail-label">Tamano Email</span>
+                    <span class="detail-value">
+                        @if (Log.EmailSizeBytes.HasValue)
+                        {
+                            @FormatBytes(Log.EmailSizeBytes.Value)
+                        }
+                        else
+                        {
+                            @("—")
+                        }
+                    </span>
+
+                    <span class="detail-label">Tipo Contenido</span>
+                    <span class="detail-value">@(Log.ContentType?.ToString() ?? "—")</span>
+
+                    <span class="detail-label">Reintentos</span>
+                    <span class="detail-value">@Log.RetryCount</span>
+                </div>
+            }
+
+            @* Tab 3: Negocio *@
+            @if (_activeTab == 2)
+            {
+                <div class="detail-grid">
+                    <span class="detail-label">Tipo Transaccion</span>
+                    <span class="detail-value">@(Log.TransactionType ?? "—")</span>
+
+                    <span class="detail-label">Prioridad</span>
+                    <span class="detail-value">
+                        <span class="priority-badge priority-@Log.Priority.ToString().ToLowerInvariant()">@Log.Priority</span>
+                    </span>
+
+                    <span class="detail-label">Iniciado Por</span>
+                    <span class="detail-value">@(Log.InitiatedBy ?? "—")</span>
+
+                    <span class="detail-label">IP Origen</span>
+                    <span class="detail-value" style="font-family:monospace;">@(Log.RequestOriginIp ?? "—")</span>
+
+                    <span class="detail-label">Microservicio</span>
+                    <span class="detail-value">@Log.SourceMicroservice</span>
+
+                    <span class="detail-label">Adjuntos</span>
+                    <span class="detail-value">@Log.AttachmentCount archivos</span>
+                </div>
+            }
+
+            @* Tab 4: Pipeline *@
+            @if (_activeTab == 3)
+            {
+                <PipelineTimeline Steps="@Log.PipelineSteps" />
+            }
+
+            @* Timeline de reintentos por CorrelationId *@
+            @if (CorrelatedAttempts is not null && CorrelatedAttempts.Count > 1)
+            {
+                <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border-color);">
+                    <div class="card-title" style="margin-bottom:0.5rem;">Intentos Relacionados (@CorrelatedAttempts.Count)</div>
+                    <div style="display:flex;flex-direction:column;gap:0.3rem;">
+                        @foreach (EmailLogDto attempt in CorrelatedAttempts)
+                        {
+                            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;padding:0.3rem 0.5rem;border-radius:6px;@(attempt.MessageId == Log.MessageId ? "background:rgba(59,130,246,0.1);" : "")">
+                                <span class="status-badge status-@attempt.Status.ToString().ToLowerInvariant()" style="font-size:0.65rem;">@attempt.Status</span>
+                                <span style="color:var(--text-secondary);">@attempt.SentAtUtc.ToString("HH:mm:ss")</span>
+                                <span>@attempt.DurationMs ms</span>
+                                @if (attempt.PipelineSteps?.FirstOrDefault(s => s.StepStatus == PipelineStepStatus.Failed) is PipelineStep failedStep)
+                                {
+                                    <span style="color:var(--color-danger);font-size:0.7rem;">@failedStep.StepName</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         </div>
     </div>
 }
 
 @code {
     [Parameter] public EmailLogDto? Log { get; set; }
+    [Parameter] public List<EmailLogDto>? CorrelatedAttempts { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
+
+    private int _activeTab;
+    private Guid? _lastLogId;
+
+    protected override void OnParametersSet()
+    {
+        // Solo resetear tab cuando se abre un log DIFERENTE, no en cada re-render
+        if (Log is not null && Log.MessageId != _lastLogId)
+        {
+            _activeTab = 0;
+            _lastLogId = Log.MessageId;
+        }
+        else if (Log is null)
+        {
+            _lastLogId = null;
+        }
+    }
+
+    private async Task CopyJson()
+    {
+        if (Log is null) return;
+        string json = System.Text.Json.JsonSerializer.Serialize(Log, new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        });
+        await JS.InvokeVoidAsync("SoumaCharts.copyToClipboard", json);
+    }
+
+    private async Task CopyText(string text)
+    {
+        await JS.InvokeVoidAsync("SoumaCharts.copyToClipboard", text);
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
 }

@@ -1,4 +1,4 @@
-@* Tarjeta de volumen total de emails del día *@
+@* Tarjeta de volumen total de emails del día con indicador de tendencia *@
 
 <div class="card">
     <div class="card-title">Total Emails Hoy</div>
@@ -8,7 +8,10 @@
     }
     else
     {
-        <div class="card-value">@TotalCount</div>
+        <div style="display:flex;align-items:baseline;gap:0.5rem;">
+            <div class="card-value">@TotalCount</div>
+            <TrendIndicator Trend="@Trend" />
+        </div>
         <div class="card-subtitle">@DateLabel</div>
     }
 </div>
@@ -17,4 +20,5 @@
     [Parameter] public int TotalCount { get; set; }
     [Parameter] public string DateLabel { get; set; } = "";
     [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public TrendData? Trend { get; set; }
 }

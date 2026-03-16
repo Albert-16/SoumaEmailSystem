@@ -1,4 +1,5 @@
-@* Tabla paginada de todos los logs de email *@
+@* Tabla paginada de logs de email con ordenamiento, busqueda y columna pipeline *@
+@inject IJSRuntime JS
 
 <div class="log-table-container">
     @if (IsLoading)
@@ -10,7 +11,7 @@
             }
         </div>
     }
-    else if (Logs.Count == 0)
+    else if (DisplayLogs.Count == 0)
     {
         <div style="padding:2rem;text-align:center;color:var(--text-muted);">
             No se encontraron registros con los filtros aplicados.
@@ -18,17 +19,38 @@
     }
     else
     {
+        @* Busqueda rapida inline *@
+        <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border-color);display:flex;gap:0.5rem;align-items:center;">
+            <input type="text" class="table-search-input"
+                   placeholder="Buscar por asunto, MessageId o CorrelationId..."
+                   @bind="_searchText" @bind:event="oninput" />
+            <span style="color:var(--text-muted);font-size:0.75rem;white-space:nowrap;">
+                @DisplayLogs.Count registros
+            </span>
+        </div>
+
         <div style="overflow-x:auto;">
             <table class="log-table">
                 <thead>
                     <tr>
-                        <th>Fecha</th>
-                        <th>Microservicio</th>
+                        <th class="sortable-header" @onclick='() => ToggleSort("Fecha")'>
+                            Fecha @SortIcon("Fecha")
+                        </th>
+                        <th class="sortable-header" @onclick='() => ToggleSort("Microservicio")'>
+                            Microservicio @SortIcon("Microservicio")
+                        </th>
                         <th>Remitente</th>
-                        <th>Destinatarios</th>
                         <th>Asunto</th>
-                        <th>Estado</th>
-                        <th>Duracion</th>
+                        <th class="sortable-header" @onclick='() => ToggleSort("Estado")'>
+                            Estado @SortIcon("Estado")
+                        </th>
+                        <th class="sortable-header" @onclick='() => ToggleSort("Prioridad")'>
+                            Prioridad @SortIcon("Prioridad")
+                        </th>
+                        <th>Pipeline</th>
+                        <th class="sortable-header" @onclick='() => ToggleSort("Duracion")'>
+                            Duracion @SortIcon("Duracion")
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,10 +59,28 @@
                         <tr @onclick="() => OnRowClicked.InvokeAsync(log)">
                             <td>@log.SentAtUtc.ToString("MM/dd HH:mm")</td>
                             <td>@log.SourceMicroservice</td>
-                            <td title="@log.SenderAddress">@Truncate(log.SenderAddress, 22)</td>
-                            <td title="@string.Join(", ", log.RecipientAddresses)">@Truncate(string.Join(", ", log.RecipientAddresses), 25)</td>
-                            <td title="@log.Subject">@Truncate(log.Subject, 30)</td>
+                            <td title="@log.SenderAddress">@Truncate(log.SenderAddress, 20)</td>
+                            <td title="@log.Subject">@Truncate(log.Subject, 28)</td>
                             <td><span class="status-badge status-@log.Status.ToString().ToLowerInvariant()">@log.Status</span></td>
+                            <td><span class="priority-badge priority-@log.Priority.ToString().ToLowerInvariant()">@log.Priority</span></td>
+                            <td>
+                                @if (log.PipelineSteps is not null)
+                                {
+                                    PipelineStep? failed = log.PipelineSteps.FirstOrDefault(s => s.StepStatus == PipelineStepStatus.Failed);
+                                    if (failed is not null)
+                                    {
+                                        <span class="pipeline-indicator pipeline-indicator-failed" title="@failed.StepName: @failed.Message">✕</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="pipeline-indicator pipeline-indicator-ok" title="Todos los pasos OK">✓</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="pipeline-indicator pipeline-indicator-none" title="Sin datos de pipeline">—</span>
+                                }
+                            </td>
                             <td>@log.DurationMs ms</td>
                         </tr>
                     }
@@ -53,7 +93,7 @@
             <div class="pagination">
                 <button class="btn btn-secondary btn-sm" disabled="@(CurrentPage <= 1)" @onclick="PreviousPage">Anterior</button>
                 <span style="color:var(--text-secondary);font-size:0.82rem;">
-                    Pagina @CurrentPage de @TotalPages (@Logs.Count registros)
+                    Pagina @CurrentPage de @TotalPages (@DisplayLogs.Count registros)
                 </span>
                 <button class="btn btn-secondary btn-sm" disabled="@(CurrentPage >= TotalPages)" @onclick="NextPage">Siguiente</button>
             </div>
@@ -68,19 +108,70 @@
 
     private const int PageSize = 50;
     private int CurrentPage = 1;
+    private string _searchText = "";
+    private string _sortColumn = "Fecha";
+    private bool _sortAscending;
 
-    private int TotalPages => (int)Math.Ceiling((double)Logs.Count / PageSize);
+    private List<EmailLogDto> DisplayLogs
+    {
+        get
+        {
+            IEnumerable<EmailLogDto> query = Logs;
 
-    private List<EmailLogDto> PagedLogs => Logs
+            if (!string.IsNullOrWhiteSpace(_searchText))
+            {
+                string search = _searchText;
+                query = query.Where(l =>
+                    l.Subject.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    l.MessageId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    (l.CorrelationId?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            query = _sortColumn switch
+            {
+                "Fecha" => _sortAscending ? query.OrderBy(l => l.SentAtUtc) : query.OrderByDescending(l => l.SentAtUtc),
+                "Microservicio" => _sortAscending ? query.OrderBy(l => l.SourceMicroservice) : query.OrderByDescending(l => l.SourceMicroservice),
+                "Estado" => _sortAscending ? query.OrderBy(l => l.Status) : query.OrderByDescending(l => l.Status),
+                "Prioridad" => _sortAscending ? query.OrderBy(l => l.Priority) : query.OrderByDescending(l => l.Priority),
+                "Duracion" => _sortAscending ? query.OrderBy(l => l.DurationMs) : query.OrderByDescending(l => l.DurationMs),
+                _ => query.OrderByDescending(l => l.SentAtUtc)
+            };
+
+            return query.ToList();
+        }
+    }
+
+    private int TotalPages => (int)Math.Ceiling((double)DisplayLogs.Count / PageSize);
+
+    private List<EmailLogDto> PagedLogs => DisplayLogs
         .Skip((CurrentPage - 1) * PageSize)
         .Take(PageSize)
         .ToList();
 
     protected override void OnParametersSet()
     {
-        // Reset a página 1 cuando cambian los datos
         if (CurrentPage > TotalPages && TotalPages > 0)
             CurrentPage = 1;
+    }
+
+    private void ToggleSort(string column)
+    {
+        if (_sortColumn == column)
+        {
+            _sortAscending = !_sortAscending;
+        }
+        else
+        {
+            _sortColumn = column;
+            _sortAscending = column != "Fecha";
+        }
+        CurrentPage = 1;
+    }
+
+    private string SortIcon(string column)
+    {
+        if (_sortColumn != column) return "";
+        return _sortAscending ? "▲" : "▼";
     }
 
     private void PreviousPage()

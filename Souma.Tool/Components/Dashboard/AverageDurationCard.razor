@@ -1,4 +1,4 @@
-@* Tarjeta de duración promedio de envío *@
+@* Tarjeta de duración promedio de envío con P95 *@
 
 <div class="card">
     <div class="card-title">Duracion Promedio</div>
@@ -9,11 +9,14 @@
     else
     {
         <div class="card-value">@AverageDurationMs.ToString("F0")<span style="font-size:0.9rem;color:var(--text-muted);"> ms</span></div>
-        <div class="card-subtitle">Tiempo promedio de envio</div>
+        <div class="card-subtitle">
+            P95: @P95Ms.ToString("F0") ms
+        </div>
     }
 </div>
 
 @code {
     [Parameter] public double AverageDurationMs { get; set; }
+    [Parameter] public double P95Ms { get; set; }
     [Parameter] public bool IsLoading { get; set; }
 }

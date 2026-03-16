@@ -37,8 +37,12 @@ app.MapPost("/api/email/send", async (
     IEmailSender emailSender,
     IEmailLogCollector logCollector, // 2. Inyectar IEmailLogCollector
     ILogger<Program> logger,
+    HttpContext httpContext,
     CancellationToken cancellationToken) =>
 {
+    // Capturar timestamp de recepción para calcular tiempo en cola
+    DateTimeOffset queuedAtUtc = DateTimeOffset.UtcNow;
+
     // Medir duración de la operación de envío con Stopwatch
     Stopwatch cronometro = Stopwatch.StartNew();
     EmailSendResult resultado;
@@ -59,9 +63,22 @@ app.MapPost("/api/email/send", async (
 
     cronometro.Stop();
 
+    // Parsear enums del request (vienen como string para compatibilidad con ASMX .NET 4.7.2)
+    EmailPriority prioridad = Enum.TryParse<EmailPriority>(request.Priority, true, out EmailPriority p)
+        ? p
+        : EmailPriority.Normal;
+
+    EmailContentType? tipoContenido = Enum.TryParse<EmailContentType>(request.ContentType, true, out EmailContentType ct)
+        ? ct
+        : null;
+
+    // Capturar IP del servicio solicitante
+    string? requestOriginIp = httpContext.Connection.RemoteIpAddress?.ToString();
+
     // ==========================================================================
-    // 3. Crear el DTO de log y llamar a LogEmailAsync — esto es lo único que
-    //    necesitas agregar a tu flujo existente de envío de emails.
+    // 3. Crear el DTO de log con TODOS los campos de trazabilidad y llamar a
+    //    LogEmailAsync — esto es lo único que necesitas agregar a tu flujo
+    //    existente de envío de emails.
     // ==========================================================================
     EmailLogDto logEntry = new()
     {
@@ -75,19 +92,36 @@ app.MapPost("/api/email/send", async (
         StatusMessage = resultado.Success ? null : resultado.Message,
         SentAtUtc = DateTimeOffset.UtcNow,
         DurationMs = cronometro.ElapsedMilliseconds,
-        HasAttachments = request.HasAttachments,
-        Environment = DeploymentEnvironment.DEV
+        HasAttachments = request.HasAttachments || request.AttachmentCount > 0,
+        Environment = DeploymentEnvironment.DEV,
+        // --- Campos extendidos de trazabilidad ---
+        HostName = System.Environment.MachineName,
+        SmtpStatusCode = resultado.SmtpStatusCode,
+        EmailSizeBytes = request.EmailSizeBytes,
+        AttachmentCount = request.AttachmentCount,
+        ContentType = tipoContenido,
+        TransactionType = request.TransactionType,
+        Priority = prioridad,
+        QueuedAtUtc = queuedAtUtc,
+        InitiatedBy = request.InitiatedBy,
+        RequestOriginIp = requestOriginIp,
+        PipelineSteps = resultado.PipelineSteps
     };
 
     // Llamar al logger de trazabilidad — NUNCA falla ni lanza excepción al caller
     await logCollector.LogEmailAsync(logEntry, cancellationToken);
 
+    // Identificar paso fallido del pipeline para el log estructurado
+    string pipelineResult = resultado.PipelineSteps?
+        .FirstOrDefault(s => s.StepStatus == PipelineStepStatus.Failed)?.StepName ?? "OK";
+
     logger.LogInformation(
-        "Email {Estado} hacia {Destinatarios} en {DuracionMs}ms — MessageId: {MessageId}",
+        "Email {Estado} hacia {Destinatarios} en {DuracionMs}ms — MessageId: {MessageId} Pipeline: {PipelineResult}",
         logEntry.Status,
         string.Join(", ", request.RecipientAddresses),
         cronometro.ElapsedMilliseconds,
-        logEntry.MessageId);
+        logEntry.MessageId,
+        pipelineResult);
 
     // Retornar respuesta tipada
     SendEmailResponse response = new()

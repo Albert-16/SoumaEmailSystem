@@ -66,8 +66,42 @@ public sealed class EmailLogCollectorTests : IDisposable
         Status = status,
         SentAtUtc = DateTimeOffset.UtcNow,
         DurationMs = 150,
-        Environment = DeploymentEnvironment.DEV
+        Environment = DeploymentEnvironment.DEV,
+        Priority = EmailPriority.Normal,
+        ContentType = EmailContentType.Html,
+        TransactionType = "OTP",
+        HostName = "SRV-EMAIL-01",
+        AttachmentCount = 0,
+        InitiatedBy = "TestRunner",
+        SmtpStatusCode = status == EmailStatus.Sent ? 250 : 503,
+        QueuedAtUtc = DateTimeOffset.UtcNow.AddMilliseconds(-50),
+        PipelineSteps = CrearPipelineSteps(status)
     };
+
+    private static List<PipelineStep> CrearPipelineSteps(EmailStatus status)
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        if (status == EmailStatus.Sent)
+        {
+            return
+            [
+                new() { StepOrder = 1, StepCode = "VALIDATE_RECIPIENTS", StepName = "Validar Destinatarios", StepStatus = PipelineStepStatus.OK, DurationMs = 5, ExecutedAtUtc = now },
+                new() { StepOrder = 2, StepCode = "LOAD_TEMPLATE", StepName = "Cargar Plantilla", StepStatus = PipelineStepStatus.OK, DurationMs = 10, ExecutedAtUtc = now },
+                new() { StepOrder = 3, StepCode = "PROCESS_VARIABLES", StepName = "Procesar Variables", StepStatus = PipelineStepStatus.OK, DurationMs = 8, ExecutedAtUtc = now },
+                new() { StepOrder = 4, StepCode = "PREPARE_ATTACHMENTS", StepName = "Preparar Adjuntos", StepStatus = PipelineStepStatus.OK, DurationMs = 3, ExecutedAtUtc = now },
+                new() { StepOrder = 5, StepCode = "SMTP_SEND", StepName = "Enviar por SMTP", StepStatus = PipelineStepStatus.OK, DurationMs = 120, ExecutedAtUtc = now }
+            ];
+        }
+
+        return
+        [
+            new() { StepOrder = 1, StepCode = "VALIDATE_RECIPIENTS", StepName = "Validar Destinatarios", StepStatus = PipelineStepStatus.OK, DurationMs = 5, ExecutedAtUtc = now },
+            new() { StepOrder = 2, StepCode = "LOAD_TEMPLATE", StepName = "Cargar Plantilla", StepStatus = PipelineStepStatus.Failed, Message = "Plantilla 'TestTemplate' no encontrada", DurationMs = 12, ExecutedAtUtc = now },
+            new() { StepOrder = 3, StepCode = "PROCESS_VARIABLES", StepName = "Procesar Variables", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
+            new() { StepOrder = 4, StepCode = "PREPARE_ATTACHMENTS", StepName = "Preparar Adjuntos", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now },
+            new() { StepOrder = 5, StepCode = "SMTP_SEND", StepName = "Enviar por SMTP", StepStatus = PipelineStepStatus.Skipped, DurationMs = 0, ExecutedAtUtc = now }
+        ];
+    }
 
     private void ConfigurarArchivoExistente(string contenidoJson)
     {
@@ -412,5 +446,151 @@ public sealed class EmailLogCollectorTests : IDisposable
         // Assert
         Assert.Equal(2, resultado.Count);
         Assert.All(resultado, l => Assert.Equal(EmailStatus.Failed, l.Status));
+    }
+
+    // =========================================================================
+    // Test 13: Serialización de campos nuevos y PipelineSteps
+    // =========================================================================
+    [Fact]
+    public void SerializacionCamposNuevos_IncluyePipelineSteps()
+    {
+        // Arrange
+        EmailLogDto log = CrearLogDePrueba(EmailStatus.Sent);
+
+        // Act
+        string json = JsonSerializer.Serialize(log, _jsonOptions);
+        EmailLogDto? deserializado = JsonSerializer.Deserialize<EmailLogDto>(json, _jsonOptions);
+
+        // Assert
+        Assert.NotNull(deserializado);
+        Assert.Equal(log.Priority, deserializado.Priority);
+        Assert.Equal(log.ContentType, deserializado.ContentType);
+        Assert.Equal(log.TransactionType, deserializado.TransactionType);
+        Assert.Equal(log.HostName, deserializado.HostName);
+        Assert.Equal(log.SmtpStatusCode, deserializado.SmtpStatusCode);
+        Assert.Equal(log.InitiatedBy, deserializado.InitiatedBy);
+        Assert.Equal(log.AttachmentCount, deserializado.AttachmentCount);
+        Assert.NotNull(deserializado.QueuedAtUtc);
+        Assert.NotNull(deserializado.PipelineSteps);
+        Assert.Equal(5, deserializado.PipelineSteps.Count);
+        Assert.All(deserializado.PipelineSteps, s => Assert.Equal(PipelineStepStatus.OK, s.StepStatus));
+    }
+
+    // =========================================================================
+    // Test 14: Pipeline con paso fallido — pasos posteriores marcados Skipped
+    // =========================================================================
+    [Fact]
+    public void PipelineConFallo_PasosPosterioresSonSkipped()
+    {
+        // Arrange
+        EmailLogDto log = CrearLogDePrueba(EmailStatus.Failed);
+
+        // Assert
+        Assert.NotNull(log.PipelineSteps);
+        Assert.Equal(5, log.PipelineSteps.Count);
+
+        // Paso 1 OK
+        Assert.Equal(PipelineStepStatus.OK, log.PipelineSteps[0].StepStatus);
+        // Paso 2 Failed
+        Assert.Equal(PipelineStepStatus.Failed, log.PipelineSteps[1].StepStatus);
+        Assert.Contains("no encontrada", log.PipelineSteps[1].Message);
+        // Pasos 3-5 Skipped
+        Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[2].StepStatus);
+        Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[3].StepStatus);
+        Assert.Equal(PipelineStepStatus.Skipped, log.PipelineSteps[4].StepStatus);
+    }
+
+    // =========================================================================
+    // Test 15: Retrocompatibilidad — JSON sin campos nuevos deserializa OK
+    // =========================================================================
+    [Fact]
+    public void Retrocompatibilidad_JsonSinCamposNuevos_DeserializaSinError()
+    {
+        // Arrange — JSON con solo los campos originales (pre-v2)
+        string jsonViejo = """
+        {
+            "messageId": "00000000-0000-0000-0000-000000000001",
+            "correlationId": null,
+            "sourceMicroservice": "LegacyService",
+            "senderAddress": "old@davivienda.hn",
+            "recipientAddresses": ["dest@davivienda.hn"],
+            "ccAddresses": null,
+            "subject": "Email viejo",
+            "status": 0,
+            "statusMessage": null,
+            "sentAtUtc": "2026-01-15T10:30:00+00:00",
+            "durationMs": 200,
+            "retryCount": 0,
+            "hasAttachments": false,
+            "environment": 0
+        }
+        """;
+
+        // Act
+        EmailLogDto? log = JsonSerializer.Deserialize<EmailLogDto>(jsonViejo, _jsonOptions);
+
+        // Assert — no debe lanzar, campos nuevos tienen defaults
+        Assert.NotNull(log);
+        Assert.Equal("LegacyService", log.SourceMicroservice);
+        Assert.Equal(EmailPriority.Normal, log.Priority); // default
+        Assert.Null(log.PipelineSteps); // null para logs viejos
+        Assert.Null(log.HostName);
+        Assert.Null(log.SmtpStatusCode);
+        Assert.Equal(0, log.AttachmentCount);
+        Assert.Null(log.TransactionType);
+    }
+
+    // =========================================================================
+    // Test 16: Enums nuevos serializan/deserializan correctamente
+    // =========================================================================
+    [Theory]
+    [InlineData(EmailPriority.Low)]
+    [InlineData(EmailPriority.Normal)]
+    [InlineData(EmailPriority.High)]
+    [InlineData(EmailPriority.Critical)]
+    public void EnumPriority_SerializaCorrectamente(EmailPriority priority)
+    {
+        // Arrange
+        EmailLogDto log = CrearLogDePrueba() with { Priority = priority };
+
+        // Act
+        string json = JsonSerializer.Serialize(log, _jsonOptions);
+        EmailLogDto? result = JsonSerializer.Deserialize<EmailLogDto>(json, _jsonOptions);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(priority, result.Priority);
+    }
+
+    // =========================================================================
+    // Test 17: PipelineStep serializa StepCode y StepName
+    // =========================================================================
+    [Fact]
+    public void PipelineStep_SerializaTodosLosCampos()
+    {
+        // Arrange
+        PipelineStep step = new()
+        {
+            StepOrder = 1,
+            StepCode = "VALIDATE_RECIPIENTS",
+            StepName = "Validar Destinatarios",
+            StepStatus = PipelineStepStatus.Warning,
+            Message = "Dominio @test.com no verificado",
+            DurationMs = 15,
+            ExecutedAtUtc = DateTimeOffset.UtcNow
+        };
+
+        // Act
+        string json = JsonSerializer.Serialize(step, _jsonOptions);
+        PipelineStep? result = JsonSerializer.Deserialize<PipelineStep>(json, _jsonOptions);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(1, result.StepOrder);
+        Assert.Equal("VALIDATE_RECIPIENTS", result.StepCode);
+        Assert.Equal("Validar Destinatarios", result.StepName);
+        Assert.Equal(PipelineStepStatus.Warning, result.StepStatus);
+        Assert.Equal("Dominio @test.com no verificado", result.Message);
+        Assert.Equal(15, result.DurationMs);
     }
 }

@@ -1,9 +1,17 @@
 @inherits LayoutComponentBase
+@implements IDisposable
+@inject EmailLogReaderService ReaderService
 
 <div class="page">
     <div class="top-bar">
         <h1>Souma Tool &mdash; Trazabilidad de Emails</h1>
-        <span class="badge-env">DEV</span>
+        <div class="topbar-actions">
+            <span class="heartbeat @(_isPollingActive ? "heartbeat-active" : "")" title="@(_isPollingActive ? "Polling activo" : "Polling inactivo")"></span>
+            <span class="last-update">@_lastUpdateText</span>
+            <button class="btn btn-secondary btn-sm" @onclick="ForceRefresh" title="Refrescar datos">↻</button>
+            <a href="/faq" class="btn btn-secondary btn-sm" title="Ayuda" style="text-decoration:none;">?</a>
+            <span class="badge-env">DEV</span>
+        </div>
     </div>
 
     <div class="main-content">
@@ -16,3 +24,43 @@
     <a href="." class="reload">Recargar</a>
     <span class="dismiss">X</span>
 </div>
+
+@code {
+    private bool _isPollingActive = true;
+    private string _lastUpdateText = "Actualizando...";
+    private DateTimeOffset _lastUpdateTime = DateTimeOffset.UtcNow;
+
+    protected override void OnInitialized()
+    {
+        ReaderService.OnDataRefreshed += OnDataRefreshed;
+        _lastUpdateTime = DateTimeOffset.UtcNow;
+    }
+
+    private async void OnDataRefreshed()
+    {
+        _lastUpdateTime = DateTimeOffset.UtcNow;
+        _isPollingActive = true;
+        UpdateLastUpdateText();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateLastUpdateText()
+    {
+        TimeSpan diff = DateTimeOffset.UtcNow - _lastUpdateTime;
+        _lastUpdateText = diff.TotalSeconds < 5 ? "Ahora"
+            : diff.TotalSeconds < 60 ? $"Hace {(int)diff.TotalSeconds}s"
+            : diff.TotalMinutes < 60 ? $"Hace {(int)diff.TotalMinutes}m"
+            : $"Hace {(int)diff.TotalHours}h";
+    }
+
+    private async Task ForceRefresh()
+    {
+        _lastUpdateText = "Actualizando...";
+        await ReaderService.RefreshAsync(CancellationToken.None);
+    }
+
+    public void Dispose()
+    {
+        ReaderService.OnDataRefreshed -= OnDataRefreshed;
+    }
+}

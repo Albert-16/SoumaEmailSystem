@@ -1,0 +1,1544 @@
+[
+  {
+    "messageId": "35db1bbc-1547-4985-803c-fab2814d9659",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente13@empresa.com"
+    ],
+    "subject": "Notificacion prueba 13",
+    "status": "Failed",
+    "statusMessage": "Plantilla \u0027AlertaFraude_v2\u0027 no encontrada en el gestor",
+    "sentAtUtc": "2026-03-16T00:19:48.0934472+00:00",
+    "durationMs": 163,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9255448+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 52,
+        "executedAtUtc": "2026-03-16T00:19:47.9264202+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "Failed",
+        "message": "Plantilla \u0027AlertaFraude_v2\u0027 no encontrada en el gestor",
+        "durationMs": 94,
+        "executedAtUtc": "2026-03-16T00:19:47.9802787+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "Skipped",
+        "message": "Paso omitido \u2014 un paso anterior fallo",
+        "durationMs": 0,
+        "executedAtUtc": "2026-03-16T00:19:48.0888862+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "Skipped",
+        "message": "Paso omitido \u2014 un paso anterior fallo",
+        "durationMs": 0,
+        "executedAtUtc": "2026-03-16T00:19:48.0889028+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "Skipped",
+        "message": "Paso omitido \u2014 un paso anterior fallo",
+        "durationMs": 0,
+        "executedAtUtc": "2026-03-16T00:19:48.0889041+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "Skipped",
+        "message": "Paso omitido \u2014 un paso anterior fallo",
+        "durationMs": 0,
+        "executedAtUtc": "2026-03-16T00:19:48.0889063+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "16a23ff6-b6c5-47ab-a910-49ccf3ae5137",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente17@empresa.com"
+    ],
+    "subject": "Notificacion prueba 17",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.1976529+00:00",
+    "durationMs": 256,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9409799+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 37,
+        "executedAtUtc": "2026-03-16T00:19:47.9409824+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 42,
+        "executedAtUtc": "2026-03-16T00:19:47.9802614+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 10,
+        "executedAtUtc": "2026-03-16T00:19:48.0267685+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "2 imagenes inline cargadas correctamente",
+        "durationMs": 37,
+        "executedAtUtc": "2026-03-16T00:19:48.0426269+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 14,
+        "executedAtUtc": "2026-03-16T00:19:48.088973+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 93,
+        "executedAtUtc": "2026-03-16T00:19:48.1046671+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "ec150da2-379b-4905-a0a0-bb8d2628a88e",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente11@empresa.com"
+    ],
+    "subject": "Notificacion prueba 11",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2283317+00:00",
+    "durationMs": 302,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9261103+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 43,
+        "executedAtUtc": "2026-03-16T00:19:47.9261111+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 15,
+        "executedAtUtc": "2026-03-16T00:19:47.9802614+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 51,
+        "executedAtUtc": "2026-03-16T00:19:47.996152+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 76,
+        "executedAtUtc": "2026-03-16T00:19:48.0579617+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 45,
+        "executedAtUtc": "2026-03-16T00:19:48.1352298+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 47,
+        "executedAtUtc": "2026-03-16T00:19:48.1817998+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "dd75eb3a-183a-4f09-8236-008f0e1ac396",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente9@empresa.com"
+    ],
+    "subject": "Notificacion prueba 9",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2437807+00:00",
+    "durationMs": 317,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9258787+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 49,
+        "executedAtUtc": "2026-03-16T00:19:47.9262853+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 19,
+        "executedAtUtc": "2026-03-16T00:19:47.9802891+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 50,
+        "executedAtUtc": "2026-03-16T00:19:48.0112828+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 58,
+        "executedAtUtc": "2026-03-16T00:19:48.0734013+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 41,
+        "executedAtUtc": "2026-03-16T00:19:48.1351822+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 53,
+        "executedAtUtc": "2026-03-16T00:19:48.1817699+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "cc3c2550-b054-47ff-836a-943c9cf85b90",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente4@empresa.com"
+    ],
+    "subject": "Notificacion prueba 4",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2437807+00:00",
+    "durationMs": 328,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9155229+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 82,
+        "executedAtUtc": "2026-03-16T00:19:47.9200616+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 33,
+        "executedAtUtc": "2026-03-16T00:19:48.0112684+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 13,
+        "executedAtUtc": "2026-03-16T00:19:48.0579485+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 37,
+        "executedAtUtc": "2026-03-16T00:19:48.0733896+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 73,
+        "executedAtUtc": "2026-03-16T00:19:48.1196669+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 35,
+        "executedAtUtc": "2026-03-16T00:19:48.1972146+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "2a9bde70-e9a0-4c28-9dfb-ef506f96adac",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente16@empresa.com"
+    ],
+    "subject": "Notificacion prueba 16",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2592438+00:00",
+    "durationMs": 333,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9258943+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 22,
+        "executedAtUtc": "2026-03-16T00:19:47.9276841+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 21,
+        "executedAtUtc": "2026-03-16T00:19:47.9662522+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 71,
+        "executedAtUtc": "2026-03-16T00:19:47.9961455+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 46,
+        "executedAtUtc": "2026-03-16T00:19:48.07338+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 96,
+        "executedAtUtc": "2026-03-16T00:19:48.1197528+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 31,
+        "executedAtUtc": "2026-03-16T00:19:48.2282889+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "f731ab24-9df6-44cd-a630-3818ccf767a9",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente5@empresa.com"
+    ],
+    "subject": "Notificacion prueba 5",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2593044+00:00",
+    "durationMs": 343,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9155314+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 72,
+        "executedAtUtc": "2026-03-16T00:19:47.9200892+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 24,
+        "executedAtUtc": "2026-03-16T00:19:47.9959229+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 11,
+        "executedAtUtc": "2026-03-16T00:19:48.0267577+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 52,
+        "executedAtUtc": "2026-03-16T00:19:48.0426661+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 89,
+        "executedAtUtc": "2026-03-16T00:19:48.1043016+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 53,
+        "executedAtUtc": "2026-03-16T00:19:48.197204+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "0f1e6d63-d0e4-46de-845c-16510c1bb3ef",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente6@empresa.com"
+    ],
+    "subject": "Notificacion prueba 6",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2593402+00:00",
+    "durationMs": 343,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.915477+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 60,
+        "executedAtUtc": "2026-03-16T00:19:47.919993+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 86,
+        "executedAtUtc": "2026-03-16T00:19:47.9803169+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 21,
+        "executedAtUtc": "2026-03-16T00:19:48.073391+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "2 imagenes inline cargadas correctamente",
+        "durationMs": 36,
+        "executedAtUtc": "2026-03-16T00:19:48.1043177+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 42,
+        "executedAtUtc": "2026-03-16T00:19:48.1537382+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 53,
+        "executedAtUtc": "2026-03-16T00:19:48.197204+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "c9813466-a45b-460f-9378-24611e899338",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente8@empresa.com"
+    ],
+    "subject": "Notificacion prueba 8",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2593703+00:00",
+    "durationMs": 343,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9155039+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 35,
+        "executedAtUtc": "2026-03-16T00:19:47.9200948+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 67,
+        "executedAtUtc": "2026-03-16T00:19:47.9662675+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 28,
+        "executedAtUtc": "2026-03-16T00:19:48.0422987+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 90,
+        "executedAtUtc": "2026-03-16T00:19:48.0733965+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 77,
+        "executedAtUtc": "2026-03-16T00:19:48.1662655+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 11,
+        "executedAtUtc": "2026-03-16T00:19:48.2437629+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "b20507f2-a83e-4517-abf3-c75a67567ea8",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente15@empresa.com"
+    ],
+    "subject": "Notificacion prueba 15",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2747358+00:00",
+    "durationMs": 348,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9257705+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 31,
+        "executedAtUtc": "2026-03-16T00:19:47.9278081+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 93,
+        "executedAtUtc": "2026-03-16T00:19:47.9662617+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 25,
+        "executedAtUtc": "2026-03-16T00:19:48.0734008+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 34,
+        "executedAtUtc": "2026-03-16T00:19:48.1043034+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 39,
+        "executedAtUtc": "2026-03-16T00:19:48.1537223+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 68,
+        "executedAtUtc": "2026-03-16T00:19:48.1972193+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "34c2b2f0-eedc-4066-b799-bed84658fac7",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente2@empresa.com"
+    ],
+    "subject": "Notificacion prueba 2",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2901558+00:00",
+    "durationMs": 374,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9155193+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 69,
+        "executedAtUtc": "2026-03-16T00:19:47.9200486+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 24,
+        "executedAtUtc": "2026-03-16T00:19:47.995923+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 23,
+        "executedAtUtc": "2026-03-16T00:19:48.0267548+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 49,
+        "executedAtUtc": "2026-03-16T00:19:48.0579457+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 96,
+        "executedAtUtc": "2026-03-16T00:19:48.1197528+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 58,
+        "executedAtUtc": "2026-03-16T00:19:48.2283022+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "485670dd-f80f-4ff4-95be-0379f02e8829",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente3@empresa.com"
+    ],
+    "subject": "Notificacion prueba 3",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.2902155+00:00",
+    "durationMs": 374,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9154912+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 35,
+        "executedAtUtc": "2026-03-16T00:19:47.9200742+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 46,
+        "executedAtUtc": "2026-03-16T00:19:47.9662449+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 26,
+        "executedAtUtc": "2026-03-16T00:19:48.0267488+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 66,
+        "executedAtUtc": "2026-03-16T00:19:48.057944+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 51,
+        "executedAtUtc": "2026-03-16T00:19:48.135205+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 86,
+        "executedAtUtc": "2026-03-16T00:19:48.1972183+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "12f41c25-6290-48ef-8713-65facaf83e51",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente12@empresa.com"
+    ],
+    "subject": "Notificacion prueba 12",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3216544+00:00",
+    "durationMs": 395,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9261731+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 71,
+        "executedAtUtc": "2026-03-16T00:19:47.9261748+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 29,
+        "executedAtUtc": "2026-03-16T00:19:48.0112838+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 66,
+        "executedAtUtc": "2026-03-16T00:19:48.0422931+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 41,
+        "executedAtUtc": "2026-03-16T00:19:48.1197606+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 70,
+        "executedAtUtc": "2026-03-16T00:19:48.1662646+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 77,
+        "executedAtUtc": "2026-03-16T00:19:48.2437473+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "66119169-386c-436e-86a4-6f36076cc85c",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente19@empresa.com"
+    ],
+    "subject": "Notificacion prueba 19",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3522051+00:00",
+    "durationMs": 379,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9726116+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 86,
+        "executedAtUtc": "2026-03-16T00:19:47.9726136+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 91,
+        "executedAtUtc": "2026-03-16T00:19:48.0733987+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 29,
+        "executedAtUtc": "2026-03-16T00:19:48.1662307+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 71,
+        "executedAtUtc": "2026-03-16T00:19:48.1972339+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 35,
+        "executedAtUtc": "2026-03-16T00:19:48.2747151+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 24,
+        "executedAtUtc": "2026-03-16T00:19:48.3215387+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "20a45273-114e-4dca-b236-8a14bddd38ac",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente1@empresa.com"
+    ],
+    "subject": "Notificacion prueba 1",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3522082+00:00",
+    "durationMs": 436,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.915472+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 97,
+        "executedAtUtc": "2026-03-16T00:19:47.9199955+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 46,
+        "executedAtUtc": "2026-03-16T00:19:48.0267703+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 45,
+        "executedAtUtc": "2026-03-16T00:19:48.0733639+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "2 imagenes inline cargadas correctamente",
+        "durationMs": 38,
+        "executedAtUtc": "2026-03-16T00:19:48.1197622+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 89,
+        "executedAtUtc": "2026-03-16T00:19:48.1662856+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 83,
+        "executedAtUtc": "2026-03-16T00:19:48.2593587+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "6932ae33-2ccd-4cf5-b97f-740a17784144",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente18@empresa.com"
+    ],
+    "subject": "Notificacion prueba 18",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3522387+00:00",
+    "durationMs": 394,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9573006+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 81,
+        "executedAtUtc": "2026-03-16T00:19:47.9573038+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 67,
+        "executedAtUtc": "2026-03-16T00:19:48.042318+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 53,
+        "executedAtUtc": "2026-03-16T00:19:48.1197622+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 20,
+        "executedAtUtc": "2026-03-16T00:19:48.1818136+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 41,
+        "executedAtUtc": "2026-03-16T00:19:48.2126615+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 87,
+        "executedAtUtc": "2026-03-16T00:19:48.2593262+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "8e24f7e3-a0ba-466c-a893-9cad4a42014f",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente20@empresa.com"
+    ],
+    "subject": "Notificacion prueba 20",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3522386+00:00",
+    "durationMs": 365,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9872319+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 43,
+        "executedAtUtc": "2026-03-16T00:19:47.9872342+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 42,
+        "executedAtUtc": "2026-03-16T00:19:48.0423144+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 59,
+        "executedAtUtc": "2026-03-16T00:19:48.0887386+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 39,
+        "executedAtUtc": "2026-03-16T00:19:48.1537223+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 48,
+        "executedAtUtc": "2026-03-16T00:19:48.1972286+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 87,
+        "executedAtUtc": "2026-03-16T00:19:48.259202+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "be495bf8-aacd-4829-9bb6-04d94d0869b8",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente10@empresa.com"
+    ],
+    "subject": "Notificacion prueba 10",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3522572+00:00",
+    "durationMs": 426,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9260471+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 55,
+        "executedAtUtc": "2026-03-16T00:19:47.9260484+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 38,
+        "executedAtUtc": "2026-03-16T00:19:47.980317+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 94,
+        "executedAtUtc": "2026-03-16T00:19:48.0267465+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 57,
+        "executedAtUtc": "2026-03-16T00:19:48.1353096+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 97,
+        "executedAtUtc": "2026-03-16T00:19:48.197228+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 42,
+        "executedAtUtc": "2026-03-16T00:19:48.3057219+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "024046f9-608e-409c-b25a-5bde643019e1",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente7@empresa.com"
+    ],
+    "subject": "Notificacion prueba 7",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3522382+00:00",
+    "durationMs": 436,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9155094+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 67,
+        "executedAtUtc": "2026-03-16T00:19:47.9200215+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 10,
+        "executedAtUtc": "2026-03-16T00:19:47.9959427+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 98,
+        "executedAtUtc": "2026-03-16T00:19:48.0112611+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 90,
+        "executedAtUtc": "2026-03-16T00:19:48.1197747+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 85,
+        "executedAtUtc": "2026-03-16T00:19:48.2126835+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 35,
+        "executedAtUtc": "2026-03-16T00:19:48.305744+00:00"
+      }
+    ]
+  },
+  {
+    "messageId": "07c349af-17e3-4987-a834-9f6b031fdb6b",
+    "sourceMicroservice": "Souma.MicroserviceExample",
+    "senderAddress": "noreply@davivienda.hn",
+    "recipientAddresses": [
+      "cliente14@empresa.com"
+    ],
+    "subject": "Notificacion prueba 14",
+    "status": "Sent",
+    "sentAtUtc": "2026-03-16T00:19:48.3676552+00:00",
+    "durationMs": 442,
+    "retryCount": 0,
+    "hasAttachments": false,
+    "environment": "DEV",
+    "hostName": "DESKTOP-9C0B00C",
+    "smtpStatusCode": 250,
+    "attachmentCount": 0,
+    "contentType": "Html",
+    "transactionType": "NotificacionTransferencia",
+    "priority": "Normal",
+    "queuedAtUtc": "2026-03-16T00:19:47.9255424+00:00",
+    "initiatedBy": "SistemaTest",
+    "requestOriginIp": "::1",
+    "pipelineSteps": [
+      {
+        "stepOrder": 1,
+        "stepCode": "SUBJECT_AND_PROVIDER",
+        "stepName": "Asunto y Proveedor",
+        "stepStatus": "OK",
+        "durationMs": 47,
+        "executedAtUtc": "2026-03-16T00:19:47.9259645+00:00"
+      },
+      {
+        "stepOrder": 2,
+        "stepCode": "MAIL_TEXT",
+        "stepName": "Texto del Correo",
+        "stepStatus": "OK",
+        "durationMs": 70,
+        "executedAtUtc": "2026-03-16T00:19:47.9803135+00:00"
+      },
+      {
+        "stepOrder": 3,
+        "stepCode": "MAIL_VARS",
+        "stepName": "Variables de Plantilla",
+        "stepStatus": "OK",
+        "durationMs": 70,
+        "executedAtUtc": "2026-03-16T00:19:48.0579611+00:00"
+      },
+      {
+        "stepOrder": 4,
+        "stepCode": "MAIL_IMAGES",
+        "stepName": "Imagenes del Correo",
+        "stepStatus": "OK",
+        "message": "Sin imagenes \u2014 paso completado sin accion",
+        "durationMs": 63,
+        "executedAtUtc": "2026-03-16T00:19:48.1351975+00:00"
+      },
+      {
+        "stepOrder": 5,
+        "stepCode": "MAIL_TO",
+        "stepName": "Destinatarios",
+        "stepStatus": "OK",
+        "message": "1 destinatario(s) configurado(s)",
+        "durationMs": 91,
+        "executedAtUtc": "2026-03-16T00:19:48.2126596+00:00"
+      },
+      {
+        "stepOrder": 6,
+        "stepCode": "MAIL_ATTACHMENTS",
+        "stepName": "Adjuntos",
+        "stepStatus": "OK",
+        "message": "Sin adjuntos \u2014 paso completado sin accion",
+        "durationMs": 55,
+        "executedAtUtc": "2026-03-16T00:19:48.3057488+00:00"
+      }
+    ]
+  }
+]

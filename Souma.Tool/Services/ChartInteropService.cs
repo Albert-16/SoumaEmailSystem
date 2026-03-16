@@ -42,6 +42,36 @@ public sealed class ChartInteropService : IAsyncDisposable
         await _jsRuntime.InvokeVoidAsync("SoumaCharts.destroyChart", ct, canvasId);
     }
 
+    /// <summary>Renderiza gráfico de barras apiladas por status.</summary>
+    public async Task RenderStackedBarChartAsync(
+        string canvasId,
+        string[] labels,
+        int[] sentData,
+        int[] failedData,
+        int[] pendingData,
+        int[] retryingData,
+        CancellationToken ct = default)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "SoumaCharts.renderStackedBarChart",
+            ct,
+            canvasId, labels, sentData, failedData, pendingData, retryingData);
+    }
+
+    /// <summary>Renderiza gráfico de performance con P50 y P95.</summary>
+    public async Task RenderPerformanceChartAsync(
+        string canvasId,
+        string[] labels,
+        double[] p50Data,
+        double[] p95Data,
+        CancellationToken ct = default)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "SoumaCharts.renderPerformanceChart",
+            ct,
+            canvasId, labels, p50Data, p95Data);
+    }
+
     public async ValueTask DisposeAsync()
     {
         // Chart.js limpia sus instancias en el navegador automáticamente

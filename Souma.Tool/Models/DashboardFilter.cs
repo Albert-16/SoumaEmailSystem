@@ -25,11 +25,29 @@ public sealed class DashboardFilter
     /// <summary>Texto para filtrar por destinatario.</summary>
     public string? RecipientFilter { get; set; }
 
+    /// <summary>Filtro por tipo de transacción.</summary>
+    public string? TransactionType { get; set; }
+
+    /// <summary>Filtro por prioridad.</summary>
+    public string? SelectedPriority { get; set; }
+
+    /// <summary>Filtro por hostname.</summary>
+    public string? SelectedHostName { get; set; }
+
+    /// <summary>Solo emails con duración mayor a este valor en ms.</summary>
+    public long? MinDurationMs { get; set; }
+
+    /// <summary>Solo emails con fallos en pipeline.</summary>
+    public bool? HasPipelineErrors { get; set; }
+
     /// <summary>Indica si hay filtros activos.</summary>
     public bool HasActiveFilters =>
         DateFrom.HasValue || DateTo.HasValue ||
         SelectedMicroservices.Count > 0 || SelectedStatuses.Count > 0 ||
-        !string.IsNullOrWhiteSpace(SenderFilter) || !string.IsNullOrWhiteSpace(RecipientFilter);
+        !string.IsNullOrWhiteSpace(SenderFilter) || !string.IsNullOrWhiteSpace(RecipientFilter) ||
+        !string.IsNullOrWhiteSpace(TransactionType) || !string.IsNullOrWhiteSpace(SelectedPriority) ||
+        !string.IsNullOrWhiteSpace(SelectedHostName) || MinDurationMs.HasValue ||
+        HasPipelineErrors.HasValue;
 
     /// <summary>Limpia todos los filtros.</summary>
     public void Clear()
@@ -40,5 +58,10 @@ public sealed class DashboardFilter
         SelectedStatuses = [];
         SenderFilter = null;
         RecipientFilter = null;
+        TransactionType = null;
+        SelectedPriority = null;
+        SelectedHostName = null;
+        MinDurationMs = null;
+        HasPipelineErrors = null;
     }
 }

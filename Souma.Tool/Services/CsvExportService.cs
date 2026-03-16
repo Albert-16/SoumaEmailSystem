@@ -13,8 +13,8 @@ public static class CsvExportService
     {
         StringBuilder sb = new();
 
-        // Encabezados
-        sb.AppendLine("MessageId,CorrelationId,SourceMicroservice,SenderAddress,RecipientAddresses,CcAddresses,Subject,Status,StatusMessage,SentAtUtc,DurationMs,RetryCount,HasAttachments,Environment");
+        // Encabezados (incluye campos extendidos)
+        sb.AppendLine("MessageId,CorrelationId,SourceMicroservice,SenderAddress,RecipientAddresses,CcAddresses,Subject,Status,StatusMessage,SentAtUtc,DurationMs,RetryCount,HasAttachments,Environment,HostName,SmtpStatusCode,Priority,TransactionType,AttachmentCount,ContentType,InitiatedBy,PipelineResult");
 
         foreach (EmailLogDto log in logs)
         {
@@ -31,7 +31,19 @@ public static class CsvExportService
             sb.Append(log.DurationMs).Append(',');
             sb.Append(log.RetryCount).Append(',');
             sb.Append(log.HasAttachments).Append(',');
-            sb.AppendLine(log.Environment.ToString());
+            sb.Append(log.Environment).Append(',');
+            sb.Append(EscapeCsv(log.HostName)).Append(',');
+            sb.Append(log.SmtpStatusCode?.ToString() ?? "").Append(',');
+            sb.Append(log.Priority).Append(',');
+            sb.Append(EscapeCsv(log.TransactionType)).Append(',');
+            sb.Append(log.AttachmentCount).Append(',');
+            sb.Append(log.ContentType?.ToString() ?? "").Append(',');
+            sb.Append(EscapeCsv(log.InitiatedBy)).Append(',');
+
+            // Pipeline: mostrar el paso que fallo o "OK"
+            string pipelineResult = log.PipelineSteps?
+                .FirstOrDefault(s => s.StepStatus == PipelineStepStatus.Failed)?.StepName ?? "OK";
+            sb.AppendLine(EscapeCsv(pipelineResult));
         }
 
         return Encoding.UTF8.GetBytes(sb.ToString());

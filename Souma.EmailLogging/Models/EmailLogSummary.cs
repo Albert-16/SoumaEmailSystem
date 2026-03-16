@@ -51,4 +51,26 @@ public sealed record EmailLogSummary
     /// Total general de registros de email en el día.
     /// </summary>
     public required int TotalCount { get; init; }
+
+    /// <summary>
+    /// Percentil 50 (mediana) de duración de envío en milisegundos.
+    /// </summary>
+    public double PercentileP50 { get; init; }
+
+    /// <summary>
+    /// Percentil 95 de duración de envío en milisegundos.
+    /// Indicador clave de rendimiento — revela outliers que el promedio oculta.
+    /// </summary>
+    public double PercentileP95 { get; init; }
+
+    /// <summary>
+    /// Percentil 99 de duración de envío en milisegundos.
+    /// </summary>
+    public double PercentileP99 { get; init; }
+
+    /// <summary>
+    /// Porcentaje de emails enviados dentro del umbral SLA (0.0 a 100.0).
+    /// Un email cumple SLA si su <c>DurationMs</c> es menor o igual al umbral configurado.
+    /// </summary>
+    public double SlaComplianceRate { get; init; }
 }

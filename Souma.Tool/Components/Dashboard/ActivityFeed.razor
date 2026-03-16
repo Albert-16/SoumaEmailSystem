@@ -1,0 +1,68 @@
+@* Feed de actividad reciente — ultimos N eventos *@
+
+<div class="card activity-feed-card">
+    <div class="card-title">Actividad Reciente</div>
+    @if (Logs.Count == 0)
+    {
+        <div style="color:var(--text-muted);font-size:0.82rem;padding:0.5rem 0;">
+            Sin actividad reciente
+        </div>
+    }
+    else
+    {
+        <div class="activity-feed">
+            @foreach (EmailLogDto log in Logs.Take(MaxItems))
+            {
+                <div class="feed-item" @onclick="() => OnItemClicked.InvokeAsync(log)">
+                    <span class="feed-icon feed-icon-@log.Status.ToString().ToLowerInvariant()">
+                        @GetStatusIcon(log.Status)
+                    </span>
+                    <div class="feed-body">
+                        <div class="feed-subject">@Truncate(log.Subject, 40)</div>
+                        <div class="feed-meta">
+                            <span>@log.SourceMicroservice</span>
+                            @if (GetFailedStep(log) is string failedStep)
+                            {
+                                <span class="feed-pipeline-error">@failedStep</span>
+                            }
+                        </div>
+                    </div>
+                    <span class="feed-time">@FormatTime(log.SentAtUtc)</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<EmailLogDto> Logs { get; set; } = [];
+    [Parameter] public int MaxItems { get; set; } = 15;
+    [Parameter] public EventCallback<EmailLogDto> OnItemClicked { get; set; }
+
+    private static string GetStatusIcon(EmailStatus status) => status switch
+    {
+        EmailStatus.Sent => "✓",
+        EmailStatus.Failed => "✕",
+        EmailStatus.Pending => "◌",
+        EmailStatus.Retrying => "↻",
+        _ => "?"
+    };
+
+    private static string? GetFailedStep(EmailLogDto log)
+    {
+        PipelineStep? failed = log.PipelineSteps?.FirstOrDefault(s => s.StepStatus == PipelineStepStatus.Failed);
+        return failed?.StepName;
+    }
+
+    private static string FormatTime(DateTimeOffset time)
+    {
+        TimeSpan diff = DateTimeOffset.UtcNow - time;
+        if (diff.TotalMinutes < 1) return "ahora";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h";
+        return time.ToString("MM/dd");
+    }
+
+    private static string Truncate(string text, int maxLength) =>
+        text.Length > maxLength ? string.Concat(text.AsSpan(0, maxLength - 3), "...") : text;
+}

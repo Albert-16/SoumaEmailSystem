@@ -1,0 +1,19 @@
+@* Componente reutilizable para mostrar tendencia (flecha + porcentaje) *@
+
+@if (Trend is not null && Trend.Direction != "neutral")
+{
+    <span class="trend-indicator trend-@Trend.Direction" title="@Trend.PreviousValue anterior → @Trend.CurrentValue actual">
+        <span class="trend-arrow">@(Trend.Direction == "up" ? "▲" : "▼")</span>
+        <span class="trend-percent">@Math.Abs(Trend.ChangePercent)%</span>
+    </span>
+}
+else if (Trend is not null)
+{
+    <span class="trend-indicator trend-neutral" title="Sin cambio vs periodo anterior">
+        <span class="trend-arrow">—</span>
+    </span>
+}
+
+@code {
+    [Parameter] public TrendData? Trend { get; set; }
+}

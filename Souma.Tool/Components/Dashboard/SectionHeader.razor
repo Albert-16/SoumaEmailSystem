@@ -1,0 +1,10 @@
+@* Separador visual de secciones del dashboard *@
+
+<div class="section-header">
+    <span class="section-title">@Title</span>
+    <span class="section-line"></span>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+}

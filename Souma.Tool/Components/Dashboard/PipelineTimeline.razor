@@ -1,0 +1,66 @@
+@* Timeline vertical de pasos del pipeline de envio de email *@
+
+@if (Steps is null || Steps.Count == 0)
+{
+    <div class="pipeline-empty">
+        <span style="color:var(--text-muted);font-size:0.85rem;">
+            Pipeline no disponible para este registro.
+        </span>
+        <span style="color:var(--text-muted);font-size:0.75rem;margin-top:0.25rem;">
+            Los registros anteriores a la version 2.0 no incluyen datos del pipeline.
+        </span>
+    </div>
+}
+else
+{
+    <div class="pipeline-timeline">
+        @foreach (PipelineStep step in Steps.OrderBy(s => s.StepOrder))
+        {
+            <div class="pipeline-step @GetStepClass(step.StepStatus)">
+                <div class="step-connector">
+                    <div class="step-icon step-icon-@step.StepStatus.ToString().ToLowerInvariant()">
+                        @GetStepIcon(step.StepStatus)
+                    </div>
+                    @if (step.StepOrder < Steps.Count)
+                    {
+                        <div class="step-line step-line-@step.StepStatus.ToString().ToLowerInvariant()"></div>
+                    }
+                </div>
+                <div class="step-detail">
+                    <div class="step-header">
+                        <span class="step-name">@step.StepName</span>
+                        <span class="step-duration">@step.DurationMs ms</span>
+                    </div>
+                    <div class="step-code-label">@step.StepCode</div>
+                    @if (!string.IsNullOrWhiteSpace(step.Message))
+                    {
+                        <div class="step-message step-message-@step.StepStatus.ToString().ToLowerInvariant()">
+                            @step.Message
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public List<PipelineStep>? Steps { get; set; }
+
+    private static string GetStepIcon(PipelineStepStatus status) => status switch
+    {
+        PipelineStepStatus.OK => "✓",
+        PipelineStepStatus.Failed => "✕",
+        PipelineStepStatus.Skipped => "—",
+        PipelineStepStatus.Warning => "!",
+        _ => "?"
+    };
+
+    private static string GetStepClass(PipelineStepStatus status) => status switch
+    {
+        PipelineStepStatus.Failed => "pipeline-step-failed",
+        PipelineStepStatus.Skipped => "pipeline-step-skipped",
+        PipelineStepStatus.Warning => "pipeline-step-warning",
+        _ => ""
+    };
+}

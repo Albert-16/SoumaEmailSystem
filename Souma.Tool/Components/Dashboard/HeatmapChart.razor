@@ -1,0 +1,61 @@
+@* Heatmap de actividad por hora (7 dias x 24 horas) — CSS puro, sin Chart.js *@
+
+<div class="card">
+    <div class="card-title">Actividad por Hora (Ultimos 7 dias)</div>
+    <div class="heatmap-wrapper">
+        @* Etiquetas de horas *@
+        <div class="heatmap-hour-labels">
+            <div class="heatmap-corner"></div>
+            @for (int h = 0; h < 24; h++)
+            {
+                <div class="heatmap-hour-label">@h</div>
+            }
+        </div>
+
+        @* Filas del heatmap *@
+        @for (int d = 0; d < 7; d++)
+        {
+            int dia = d;
+            <div class="heatmap-row">
+                <div class="heatmap-day-label">@DayNames[dia]</div>
+                @for (int h = 0; h < 24; h++)
+                {
+                    int hora = h;
+                    int valor = Data is not null ? Data[dia, hora] : 0;
+                    <div class="heatmap-cell"
+                         style="background-color:@GetCellColor(valor);"
+                         title="@DayNames[dia] @hora:00 — @valor emails">
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int[,]? Data { get; set; }
+
+    private static readonly string[] DayNames = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"];
+
+    private int MaxValue
+    {
+        get
+        {
+            if (Data is null) return 1;
+            int max = 0;
+            for (int d = 0; d < 7; d++)
+                for (int h = 0; h < 24; h++)
+                    if (Data[d, h] > max) max = Data[d, h];
+            return max == 0 ? 1 : max;
+        }
+    }
+
+    private string GetCellColor(int valor)
+    {
+        if (valor == 0) return "rgba(59, 130, 246, 0.05)";
+        double intensidad = (double)valor / MaxValue;
+        // Escala de azul: mas emails = mas intenso
+        int alpha = (int)(15 + intensidad * 85);
+        return $"rgba(59, 130, 246, 0.{alpha:D2})";
+    }
+}

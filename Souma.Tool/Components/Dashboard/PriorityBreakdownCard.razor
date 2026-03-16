@@ -1,0 +1,30 @@
+@* Tarjeta de distribución por prioridad *@
+
+<div class="card">
+    <div class="card-title">Distribucion por Prioridad</div>
+    @if (IsLoading)
+    {
+        <div class="skeleton skeleton-text" style="width:100%;height:3rem;"></div>
+    }
+    else if (Breakdown.Count == 0)
+    {
+        <div class="card-subtitle">Sin datos</div>
+    }
+    else
+    {
+        <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem;">
+            @foreach (KeyValuePair<string, int> item in Breakdown)
+            {
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span><span class="priority-badge priority-@item.Key.ToLowerInvariant()">@item.Key</span></span>
+                    <span style="font-weight:600;">@item.Value</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Dictionary<string, int> Breakdown { get; set; } = [];
+    [Parameter] public bool IsLoading { get; set; }
+}
